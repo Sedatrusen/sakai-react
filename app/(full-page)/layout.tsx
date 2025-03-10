@@ -1,6 +1,8 @@
+'use client';
 import { Metadata } from 'next';
 import AppConfig from '../../layout/AppConfig';
 import React from 'react';
+import { AuthProvider } from '../../contexts/AuthContext';
 
 interface SimpleLayoutProps {
     children: React.ReactNode;
@@ -13,9 +15,11 @@ export const metadata: Metadata = {
 
 export default function SimpleLayout({ children }: SimpleLayoutProps) {
     return (
-        <React.Fragment>
-            {children}
-            <AppConfig simple />
-        </React.Fragment>
+        <AuthProvider>
+            <React.Fragment>
+                {children}
+                <AppConfig simple />
+            </React.Fragment>
+        </AuthProvider>
     );
 }

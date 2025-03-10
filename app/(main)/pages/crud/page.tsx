@@ -16,6 +16,9 @@ import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { ProductService } from '../../../../demo/service/ProductService';
 import { Demo } from '@/types';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { useLanguage } from '../../../../app/contexts/LanguageContext';
+import { Permission } from '../../../../components/Permission';
 
 /* @todo Used 'as any' for types here. Will fix in next version due to onSelectionChange event type issue. */
 const Crud = () => {
@@ -41,6 +44,8 @@ const Crud = () => {
     const [globalFilter, setGlobalFilter] = useState('');
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable<any>>(null);
+    const { hasPermission } = useAuth();
+    const { t } = useLanguage();
 
     useEffect(() => {
         ProductService.getProducts().then((data) => setProducts(data as any));
@@ -195,21 +200,33 @@ const Crud = () => {
 
     const leftToolbarTemplate = () => {
         return (
-            <React.Fragment>
-                <div className="my-2">
-                    <Button label="New" icon="pi pi-plus" severity="success" className=" mr-2" onClick={openNew} />
-                    <Button label="Delete" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !(selectedProducts as any).length} />
-                </div>
-            </React.Fragment>
+            <div className="my-2">
+                <Permission permissionKey="PRODUCT_CREATE">
+                    <Button label={t('crud.new')} icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
+                </Permission>
+                <Permission permissionKey="PRODUCT_DELETE">
+                    <Button 
+                        label={t('crud.delete')} 
+                        icon="pi pi-trash" 
+                        severity="danger" 
+                        onClick={confirmDeleteSelected} 
+                        disabled={!selectedProducts || !(selectedProducts as any).length} 
+                    />
+                </Permission>
+            </div>
         );
     };
 
     const rightToolbarTemplate = () => {
         return (
-            <React.Fragment>
-                <FileUpload mode="basic" accept="image/*" maxFileSize={1000000} chooseLabel="Import" className="mr-2 inline-block" />
-                <Button label="Export" icon="pi pi-upload" severity="help" onClick={exportCSV} />
-            </React.Fragment>
+            <div className="flex">
+                <Permission permissionKey="PRODUCT_IMPORT">
+                    <FileUpload mode="basic" accept="image/*" maxFileSize={1000000} chooseLabel={t('crud.import')} className="mr-2 inline-block" />
+                </Permission>
+                <Permission permissionKey="PRODUCT_EXPORT">
+                    <Button label={t('crud.export')} icon="pi pi-upload" severity="help" onClick={exportCSV} />
+                </Permission>
+            </div>
         );
     };
 
@@ -278,16 +295,20 @@ const Crud = () => {
 
     const actionBodyTemplate = (rowData: Demo.Product) => {
         return (
-            <>
-                <Button icon="pi pi-pencil" rounded severity="success" className="mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteProduct(rowData)} />
-            </>
+            <div className="flex">
+                <Permission permissionKey="PRODUCT_EDIT">
+                    <Button icon="pi pi-pencil" rounded severity="success" className="mr-2" onClick={() => editProduct(rowData)} />
+                </Permission>
+                <Permission permissionKey="PRODUCT_DELETE">
+                    <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteProduct(rowData)} />
+                </Permission>
+            </div>
         );
     };
 
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Manage Products</h5>
+            <h5 className="m-0">{t('crud.title')}</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.currentTarget.value)} placeholder="Search..." />
@@ -324,8 +345,8 @@ const Crud = () => {
                     <DataTable
                         ref={dt}
                         value={products}
-                        selection={selectedProducts}
-                        onSelectionChange={(e) => setSelectedProducts(e.value as any)}
+                        selection={hasPermission('PRODUCT_DELETE') ? selectedProducts : undefined}
+                        onSelectionChange={hasPermission('PRODUCT_DELETE') ? (e) => setSelectedProducts(e.value as any) : undefined}
                         dataKey="id"
                         paginator
                         rows={10}
@@ -338,7 +359,7 @@ const Crud = () => {
                         header={header}
                         responsiveLayout="scroll"
                     >
-                        <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
+                        {hasPermission('PRODUCT_DELETE') && <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>}
                         <Column field="code" header="Code" sortable body={codeBodyTemplate} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column header="Image" body={imageBodyTemplate}></Column>
@@ -346,7 +367,9 @@ const Crud = () => {
                         <Column field="category" header="Category" sortable body={categoryBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column field="rating" header="Reviews" body={ratingBodyTemplate} sortable></Column>
                         <Column field="inventoryStatus" header="Status" body={statusBodyTemplate} sortable headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
+                        {(hasPermission('PRODUCT_EDIT') || hasPermission('PRODUCT_DELETE')) && 
+                            <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
+                        }
                     </DataTable>
 
                     <Dialog visible={productDialog} style={{ width: '450px' }} header="Product Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
@@ -409,7 +432,7 @@ const Crud = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                             {product && (
                                 <span>
-                                    Are you sure you want to delete <b>{product.name}</b>?
+                                    {t('crud.confirmDelete')} <b>{product.name}</b>?
                                 </span>
                             )}
                         </div>
@@ -418,7 +441,7 @@ const Crud = () => {
                     <Dialog visible={deleteProductsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteProductsDialogFooter} onHide={hideDeleteProductsDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                            {product && <span>Are you sure you want to delete the selected products?</span>}
+                            {product && <span>{t('crud.confirmDelete')}</span>}
                         </div>
                     </Dialog>
                 </div>
