@@ -44,7 +44,38 @@ const AppMenu = () => {
                 {
                     label: 'Crud',
                     icon: 'pi pi-fw pi-pencil',
-                    to: '/pages/crud'
+                    items: [
+                        {
+                            label: 'Products',
+                            icon: 'pi pi-fw pi-box',
+                            to: '/pages/crud/products'
+                        },
+                        {
+                            label: 'Suppliers',
+                            icon: 'pi pi-fw pi-truck',
+                            to: '/pages/crud/suppliers'
+                        },
+                        {
+                            label: 'Brands',
+                            icon: 'pi pi-fw pi-tag',
+                            to: '/pages/crud/brands'
+                        },
+                        {
+                            label: 'Models',
+                            icon: 'pi pi-fw pi-list',
+                            to: '/pages/crud/models'
+                        },
+                        {
+                            label: 'Batches',
+                            icon: 'pi pi-fw pi-layer',
+                            to: '/pages/crud/batches'
+                        },
+                        {
+                            label: 'Machines',
+                            icon: 'pi pi-fw pi-cog',
+                            to: '/pages/crud/machines'
+                        }
+                    ]
                 },
                 {
                     label: 'Users',

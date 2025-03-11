@@ -1,0 +1,16 @@
+{
+    "welcome": "Hoşgeldiniz",
+    "welcomeBack": "Tekrar Hoşgeldiniz",
+    "signIn": "Giriş Yap",
+    "signInToContinue": "Devam etmek için giriş yapın",
+    "email": "E-posta",
+    "password": "Şifre",
+    "emailPlaceholder": "E-posta adresi",
+    "passwordPlaceholder": "Şifre",
+    "testAccounts": "Test Hesapları",
+    "loading": "Yükleniyor...",
+    "error": {
+        "required": "Lütfen e-posta ve şifre giriniz",
+        "invalid": "Geçersiz e-posta veya şifre"
+    }
+} 

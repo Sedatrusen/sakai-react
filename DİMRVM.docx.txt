@@ -1,0 +1,300 @@
+﻿* Ürünleri tanımladığımız tablodur
+Ürün
+	Alan Adı
+	Veri Türü
+	Açıklama
+	product_id
+	INT
+	Ürün ID (Birincil Anahtar)
+	name
+	VARCHAR
+	Ürün Adı
+	description
+	TEXT
+	Ürün Açıklaması
+	supplier_id
+	INT
+	Tedarikçi ID (Yabancı Anahtar)
+	brand_id
+	INT
+	Marka ID (Yabancı Anahtar)
+	model_id
+	INT
+	Model ID (Yabancı Anahtar)
+	
+
+	
+
+	
+
+	
+
+* Satın alma planlaması yaptığımız tedarikçi talosudur
+Tedarikci
+	Alan Adı
+	Veri Türü
+	Açıklama
+	supplier_id
+	INT
+	Tedarikçi ID (Birincil Anahtar)
+	name
+	VARCHAR
+	Tedarikçi Adı
+	contact_info
+	VARCHAR
+	İletişim Bilgisi
+	
+
+	
+
+	
+
+	
+
+* Ürünlere ait marka bilgilerini tutar
+Marka
+	Alan Adı
+	Veri Türü
+	Açıklama
+	brand_id
+	INT
+	Marka ID (Birincil Anahtar)
+	brand_name
+	VARCHAR
+	Marka Adı
+	
+
+	
+
+	
+
+	
+
+* Ürünlere ait model bilgilerini tutar marka tablosu ile eşleştirilmeli düşüncesindeyim fakat aynı model ürünleri bulunan markalar bulunursa kayıt işlemleri yorucu olacağı için her iki senaryoda düşünülmelidir. Fakat bağlanması taraftarıyız.
+Model
+	Alan Adı
+	Veri Türü
+	Açıklama
+	model_id
+	INT
+	Model ID (Birincil Anahtar)
+	Marka_id
+	INT
+	Marka ID (Yabancı Anahtar)
+	model_name
+	VARCHAR
+	Model Adı
+	
+
+	
+
+	
+
+	
+
+* Ürünlere ait parti bilgilerinin tutulduğu tablodur. Senaryoya göre her partide tek ürün tipi olmalıdır. Fakat partilerde farklı ürün tipleri olması durumunda tablo bölünmeli Parti ve Parti Ürünleri adlı iki tablo oluşturulmalıdır. Ayrıca partide aldığımız birim fiyatıda karşılaştırarak analiz edebiliriz.
+Parti
+	Alan Adı
+	Veri Türü
+	Açıklama
+	batch_id
+	INT
+	Parti ID (Birincil Anahtar)
+	product_id
+	INT
+	Ürün ID (Yabancı Anahtar)
+	batch_number
+	VARCHAR
+	Parti Numarası
+	manufacture_date
+	DATE
+	Üretim Tarihi
+	expiration_date
+	DATE
+	Son Kullanma Tarihi
+	total_quantity
+	INT
+	Toplam Miktar
+	used_quantity
+	INT
+	Kullanılan Miktar
+	remaining_quantity
+	INT
+	Kalan Miktar
+	price
+	DECIMAL(10,2)        
+	Ürün Fiyatı
+	
+
+	
+
+	
+
+	
+
+* Stok işlemlerinin geçmişlerini takip edilmesi amacıyla tutulan tablodur. Parti bazlı olarak ürünlerin kullanım geçmişlerini görürüz. Bu tabloda toplu kullanımı değil anlık hareketleri tutarız. Miktar toplamı her zaman parti deki ürünün kullanım miktarına eşit olmalıdır.
+Stok Hareketleri
+	Alan Adı
+	Veri Türü
+	Açıklama
+	movement_id
+	INT
+	Hareket ID (Birincil Anahtar)
+	product_id
+	INT
+	Ürün ID (Yabancı Anahtar)
+	batch_id
+	INT
+	Parti ID (Yabancı Anahtar)
+	movement_type
+	ENUM('Kullanım', 'Tüketim', 'Tedarik', 'Hurda')
+	Hareket Türü
+	quantity
+	INT
+	Miktar
+	movement_date
+	DATE
+	Hareket Tarihi
+	description
+	TEXT
+	Hareket Açıklaması
+	
+
+	
+
+	
+
+	
+
+* Üretilen Makineleri tuttuğumuz tablodur. Makchine_code (Kendimizin belirleyeceği bir kod)  ile makineleri işaretleyerek birbirinden ayırabileceğimiz bir numara oluşturmuş olacağız.
+Makine
+	Alan Adı
+	Veri Türü
+	Açıklama
+	machine_id
+	INT
+	Makine ID (Birincil Anahtar)
+	Machine_code
+	VARCHAR
+	Makine Kodu
+	name
+	VARCHAR
+	Makine Adı
+	description
+	TEXT
+	Makine Açıklaması
+	location
+	VARCHAR
+	Makine Konumu
+	
+
+	
+
+	
+
+	
+
+* Anlık olarak makine içerisinde kullanılan ürün geçmişini veren tablodur.
+Makinede Kullanılan Ürünler
+	machine_product_id
+	INT
+	Makine Ürün ID (Birincil Anahtar)
+	machine_id
+	INT
+	Makine ID (Yabancı Anahtar)
+	product_id
+	INT
+	Ürün ID (Yabancı Anahtar)
+	batch_id
+	INT
+	Parti ID (Yabancı Anahtar)
+	used_quantity
+	INT
+	Kullanılan Miktar
+	remaining_quantity
+	INT
+	Kalan Miktar
+	updated_at
+	TIMESTAMP
+	Güncelleme Zamanı
+	
+
+
+
+* Makinede bulunan ve daha önce makinede kullanılan ve çıkarılan ürünleri gösteren tablo olarak tasarlanmıştır. Böylece makine içerisinde kullanılan sensörleri ve kullanım geçmişlerini takip edebiliriz.
+Makine Ürün Kullanım Geçmişi
+	Alan Adı
+	Veri Türü
+	Açıklama
+	movement_id
+	INT
+	Hareket ID (Birincil Anahtar)
+	product_id
+	INT
+	Ürün ID (Yabancı Anahtar)
+	batch_id
+	INT
+	Parti ID (Yabancı Anahtar)
+	movement_type
+	ENUM('Kullanım', 'Makineden Çıkarma')
+	Hareket Türü
+	quantity
+	INT
+	Miktar
+	movement_date
+	DATE
+	Hareket Tarihi
+	description
+	TEXT
+	Hareket Açıklaması
+	machine_id
+	INT
+	Makine ID (Yabancı Anahtar)
+	
+
+* Tüm tablolarda ortak olacak şekilde ayrıca tablolarda hard delete işlemi yerine soft delete kullanılması daha güvenilir olacaktır bulunan tüm tablolara IsDeleted kolonu eklenerek kaydın son durumunu takip edebiliriz.
+Ortak Tablo Alanları
+	Alan Adı
+	Alan Adı
+	Alan Adı
+	id
+	INT
+	Birincil Anahtar
+	record_id
+	INT
+	Kaydın ID’si (İlgili Tabloya Yabancı Anahtar)
+	table_name_id
+	int
+	Kaydın ait olduğu tablo 
+	created_at
+	TIMESTAMP
+	Eklenme Tarihi
+	updated_at
+	TIMESTAMP
+	Güncellenme Tarihi
+	created_by
+	INT
+	Kaydı Ekleyen Kullanıcı ID'si
+	updated_by
+	INT
+	Kaydı Güncelleyen Kullanıcı ID'si
+	version
+	INT
+	Satır Versiyon Numarası
+	
+
+Tablolar Tablosu
+	Alan Adı
+	Alan Adı
+	Alan Adı
+	id
+	INT
+	Birincil Anahtar
+	table_name
+	INT
+	Oluşturulan Tablo Adları
+	
+
+
+
+* Sistem içerisinde tedarikçi ve temin edilen marka model bilgilerini tutulacağı bir tabloda oluşturmak iş takibini kolaylaştırır. Tedarikçinin sağladığı ürünler bazında bilgi birimini oluşturacağı bir veri toplamış olacağız. Bu ürünler bazında favori ürünlerimizi belirterek kullanım durumlarını ve ömürlerini ve tedarikci garanti sürelerini yine bu tabloda tutabiliriz.

@@ -1,0 +1,12 @@
+{
+    "dashboard": "Panel",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "crud": "CRUD",
+    "auth": "Kimlik",
+    "landing": "Anasayfa",
+    "language": "Dil",
+    "adminPanel": "Yönetici Paneli",
+    "managerDashboard": "Yönetici Gösterge Paneli",
+    "viewerContent": "İzleyici İçeriği"
+} 

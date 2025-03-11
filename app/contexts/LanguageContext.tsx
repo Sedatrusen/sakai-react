@@ -1,67 +1,39 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { en } from '../locales/en';
-import { tr } from '../locales/tr';
-
-type Language = 'en' | 'tr';
-type TranslationType = typeof en;
-type TranslationsType = Record<Language, TranslationType>;
+import React, { createContext, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import '../i18n';
 
 interface LanguageContextType {
-    currentLanguage: Language;
     t: (key: string) => string;
-    changeLanguage: (lang: Language) => void;
+    changeLanguage: (lang: string) => void;
+    currentLanguage: string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const translations: TranslationsType = {
-    en,
-    tr
-};
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { t, i18n } = useTranslation();
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-    const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
-
-    useEffect(() => {
-        const savedLang = localStorage.getItem('language') as Language;
-        if (savedLang && (savedLang === 'en' || savedLang === 'tr')) {
-            setCurrentLanguage(savedLang);
-        }
-    }, []);
-
-    const changeLanguage = (lang: Language) => {
-        setCurrentLanguage(lang);
-        localStorage.setItem('language', lang);
-    };
-
-    const t = (key: string) => {
-        const keys = key.split('.');
-        let value: any = translations[currentLanguage];
-        
-        for (const k of keys) {
-            if (value && typeof value === 'object' && k in value) {
-                value = value[k];
-            } else {
-                return key;
-            }
-        }
-
-        return value as string;
+    const changeLanguage = (lang: string) => {
+        i18n.changeLanguage(lang);
     };
 
     return (
-        <LanguageContext.Provider value={{ currentLanguage, t, changeLanguage }}>
+        <LanguageContext.Provider value={{
+            t,
+            changeLanguage,
+            currentLanguage: i18n.language
+        }}>
             {children}
         </LanguageContext.Provider>
     );
-}
+};
 
-export function useLanguage() {
+export const useLanguage = () => {
     const context = useContext(LanguageContext);
     if (context === undefined) {
         throw new Error('useLanguage must be used within a LanguageProvider');
     }
     return context;
-} 
+}; 
