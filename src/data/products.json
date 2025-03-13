@@ -1,0 +1,31 @@
+{
+    "products": [
+        {
+            "product_id": 1,
+            "name": "Laptop",
+            "description": "High performance laptop",
+            "supplier_id": 1,
+            "brand_id": 1,
+            "model_id": 1,
+            "is_deleted": false
+        },
+        {
+            "product_id": 2,
+            "name": "Desktop Computer",
+            "description": "Powerful desktop computer",
+            "supplier_id": 2,
+            "brand_id": 2,
+            "model_id": 2,
+            "is_deleted": false
+        },
+        {
+            "product_id": 3,
+            "name": "Tablet",
+            "description": "Portable tablet device",
+            "supplier_id": 1,
+            "brand_id": 1,
+            "model_id": 3,
+            "is_deleted": false
+        }
+    ]
+}

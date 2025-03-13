@@ -13,7 +13,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../app/contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
-import SupplierService, { Supplier, SupplierCreateDTO, SupplierUpdateDTO } from '../../../../../src/services/SupplierService';
+import SupplierService, { SupplierCreateDTO, SupplierUpdateDTO } from '../../../../../src/services/SupplierService';
+import { Supplier } from '../../../../../src/types/supplier';
 
 const Suppliers = () => {
     let emptySupplier: SupplierCreateDTO = {
@@ -86,7 +87,7 @@ const Suppliers = () => {
                     toast.current?.show({
                         severity: 'success',
                         summary: 'Success',
-                        detail: t('crud:suppliers.updateSuccess'),
+                        detail: t('crud:common.updateSuccess'),
                         life: 3000
                     });
                 } else {
@@ -94,7 +95,7 @@ const Suppliers = () => {
                     toast.current?.show({
                         severity: 'success',
                         summary: 'Success',
-                        detail: t('crud:suppliers.createSuccess'),
+                        detail: t('crud:common.createSuccess'),
                         life: 3000
                     });
                 }
@@ -131,7 +132,7 @@ const Suppliers = () => {
             toast.current?.show({
                 severity: 'success',
                 summary: 'Success',
-                detail: t('crud:suppliers.deleteSuccess'),
+                detail: t('crud:common.deleteSuccess'),
                 life: 3000
             });
             await loadData();
@@ -163,7 +164,7 @@ const Suppliers = () => {
             toast.current?.show({
                 severity: 'success',
                 summary: 'Success',
-                detail: t('crud:suppliers.exportSuccess'),
+                detail: t('crud:common.exportSuccess'),
                 life: 3000
             });
         } catch (error) {
@@ -185,7 +186,7 @@ const Suppliers = () => {
             toast.current?.show({
                 severity: 'success',
                 summary: 'Success',
-                detail: t('crud:suppliers.importSuccess'),
+                detail: t('crud:common.importSuccess'),
                 life: 3000
             });
             await loadData();
@@ -208,19 +209,28 @@ const Suppliers = () => {
         setSupplier(_supplier);
     };
 
+    const confirmDeleteSelected = () => {
+        setDeleteSuppliersDialog(true);
+    };
+
     const leftToolbarTemplate = () => {
         return (
-            <div className="my-2">
+            <div className="flex flex-wrap gap-2">
                 <Permission permissionKey="SUPPLIER_CREATE">
-                    <Button label={t('crud:common.new')} icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
+                    <Button
+                        label={t('crud:common.new')}
+                        icon="pi pi-plus"
+                        severity="success"
+                        onClick={openNew}
+                    />
                 </Permission>
                 <Permission permissionKey="SUPPLIER_DELETE">
-                    <Button 
-                        label={t('crud:common.delete')} 
-                        icon="pi pi-trash" 
-                        severity="danger" 
-                        onClick={() => setDeleteSuppliersDialog(true)} 
-                        disabled={!selectedSuppliers || !selectedSuppliers.length} 
+                    <Button
+                        label={t('crud:common.delete')}
+                        icon="pi pi-trash"
+                        severity="danger"
+                        onClick={confirmDeleteSelected}
+                        disabled={!selectedSuppliers || !selectedSuppliers.length}
                     />
                 </Permission>
             </div>
@@ -229,20 +239,26 @@ const Suppliers = () => {
 
     const rightToolbarTemplate = () => {
         return (
-            <div className="flex">
+            <div className="flex flex-wrap gap-2">
                 <Permission permissionKey="SUPPLIER_IMPORT">
-                    <FileUpload 
-                        mode="basic" 
-                        accept=".csv" 
-                        maxFileSize={1000000} 
-                        chooseLabel={t('crud:common.import')} 
-                        className="mr-2 inline-block" 
+                    <FileUpload
+                        mode="basic"
+                        name="suppliers.csv"
+                        url="/api/upload"
+                        accept=".csv"
+                        maxFileSize={1000000}
                         onUpload={onUpload}
+                        chooseLabel={t('crud:common.import')}
                         auto
                     />
                 </Permission>
                 <Permission permissionKey="SUPPLIER_EXPORT">
-                    <Button label={t('crud:common.export')} icon="pi pi-upload" severity="help" onClick={exportCSV} />
+                    <Button
+                        label={t('crud:common.export')}
+                        icon="pi pi-download"
+                        severity="info"
+                        onClick={exportCSV}
+                    />
                 </Permission>
             </div>
         );
@@ -292,6 +308,38 @@ const Suppliers = () => {
         </>
     );
 
+    const onRowEditComplete = async (e: any) => {
+        const { newData } = e;
+        try {
+            setLoading(true);
+            await SupplierService.updateSupplier(newData);
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Success',
+                detail: t('crud:common.updateSuccess'),
+                life: 3000
+            });
+            await loadData();
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to update supplier',
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const textEditor = (options: any) => {
+        return <InputText type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} className="p-inputtext-sm" />;
+    };
+
+    const textAreaEditor = (options: any) => {
+        return <InputTextarea value={options.value} onChange={(e) => options.editorCallback(e.target.value)} className="p-inputtext-sm" rows={3} cols={20} />;
+    };
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -314,11 +362,13 @@ const Suppliers = () => {
                         responsiveLayout="scroll"
                         selectionMode="multiple"
                         loading={loading}
+                        editMode="row"
+                        onRowEditComplete={onRowEditComplete}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
-                        <Column field="supplier_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
-                        <Column field="name" header={t('crud:suppliers.name')} sortable style={{ minWidth: '12rem' }}></Column>
-                        <Column field="contact_info" header={t('crud:suppliers.contactInfo')} sortable style={{ minWidth: '16rem' }}></Column>
+                        <Column field="name" header={t('crud:suppliers.name')} sortable style={{ minWidth: '12rem' }} editor={textEditor}></Column>
+                        <Column field="contact_info" header={t('crud:suppliers.contactInfo')} sortable style={{ minWidth: '16rem' }} editor={textAreaEditor}></Column>
+                        <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
 

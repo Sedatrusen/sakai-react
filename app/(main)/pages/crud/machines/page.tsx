@@ -256,8 +256,12 @@ const Machines = () => {
     const actionBodyTemplate = (rowData: Machine) => {
         return (
             <>
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editMachine(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteMachine(rowData)} />
+                <Permission permissionKey="MACHINE_EDIT">
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editMachine(rowData)} />
+                </Permission>
+                <Permission permissionKey="MACHINE_DELETE">
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteMachine(rowData)} />
+                </Permission>
             </>
         );
     };

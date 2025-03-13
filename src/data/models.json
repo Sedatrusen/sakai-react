@@ -1,0 +1,22 @@
+{
+    "models": [
+        {
+            "model_id": 1,
+            "brand_id": 1,
+            "name": "XPS 13",
+            "is_deleted": false
+        },
+        {
+            "model_id": 2,
+            "brand_id": 2,
+            "name": "Pavilion",
+            "is_deleted": false
+        },
+        {
+            "model_id": 3,
+            "brand_id": 3,
+            "name": "ThinkPad",
+            "is_deleted": false
+        }
+    ]
+} 

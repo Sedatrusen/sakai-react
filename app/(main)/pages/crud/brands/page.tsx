@@ -12,25 +12,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../app/contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
-
-interface Brand {
-    brand_id: number;
-    brand_name: string;
-    is_deleted: boolean;
-}
+import BrandService, { BrandCreateDTO } from '../../../../../src/services/BrandService';
+import { Brand } from '../../../../../src/types/brand';
 
 const Brands = () => {
-    let emptyBrand: Brand = {
-        brand_id: 0,
-        brand_name: '',
-        is_deleted: false
+    let emptyBrand: BrandCreateDTO = {
+        name: ''
     };
 
     const [brands, setBrands] = useState<Brand[]>([]);
     const [brandDialog, setBrandDialog] = useState(false);
     const [deleteBrandDialog, setDeleteBrandDialog] = useState(false);
     const [deleteBrandsDialog, setDeleteBrandsDialog] = useState(false);
-    const [brand, setBrand] = useState<Brand>(emptyBrand);
+    const [brand, setBrand] = useState<BrandCreateDTO>(emptyBrand);
     const [selectedBrands, setSelectedBrands] = useState<Brand[]>([]);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -47,9 +41,8 @@ const Brands = () => {
     const loadData = async () => {
         try {
             setLoading(true);
-            // TODO: Implement API call to fetch brands
-            // const data = await BrandService.getBrands();
-            // setBrands(data);
+            const data = await BrandService.getBrands();
+            setBrands(data);
         } catch (error) {
             toast.current?.show({
                 severity: 'error',
@@ -65,8 +58,7 @@ const Brands = () => {
     const onUpload = async (event: any) => {
         try {
             setLoading(true);
-            // TODO: Implement API call to import brands
-            // await BrandService.importBrands(event.files[0]);
+            await BrandService.importBrands(event.files[0]);
             toast.current?.show({
                 severity: 'success',
                 summary: t('crud:common.success'),
@@ -105,36 +97,42 @@ const Brands = () => {
         setDeleteBrandsDialog(false);
     };
 
-    const saveBrand = () => {
+    const saveBrand = async () => {
         setSubmitted(true);
 
-        if (brand.brand_name.trim()) {
-            let _brands = [...brands];
-            let _brand = { ...brand };
-            
-            if (brand.brand_id) {
-                const index = findIndexById(brand.brand_id);
-                _brands[index] = _brand;
+        if (brand.name.trim()) {
+            try {
+                setLoading(true);
+                if ((brand as any).brand_id) {
+                    await BrandService.updateBrand(brand as any);
+                    toast.current?.show({
+                        severity: 'success',
+                        summary: t('crud:common.success'),
+                        detail: t('crud:brands.updateSuccess'),
+                        life: 3000
+                    });
+                } else {
+                    await BrandService.createBrand(brand);
+                    toast.current?.show({
+                        severity: 'success',
+                        summary: t('crud:common.success'),
+                        detail: t('crud:brands.createSuccess'),
+                        life: 3000
+                    });
+                }
+                await loadData();
+                setBrandDialog(false);
+                setBrand(emptyBrand);
+            } catch (error) {
                 toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Brand Updated',
+                    severity: 'error',
+                    summary: t('crud:common.error'),
+                    detail: t('crud:brands.saveError'),
                     life: 3000
                 });
-            } else {
-                _brand.brand_id = createId();
-                _brands.push(_brand);
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Brand Created',
-                    life: 3000
-                });
+            } finally {
+                setLoading(false);
             }
-
-            setBrands(_brands);
-            setBrandDialog(false);
-            setBrand(emptyBrand);
         }
     };
 
@@ -148,17 +146,29 @@ const Brands = () => {
         setDeleteBrandDialog(true);
     };
 
-    const deleteBrand = () => {
-        let _brands = brands.filter((val) => val.brand_id !== brand.brand_id);
-        setBrands(_brands);
-        setDeleteBrandDialog(false);
-        setBrand(emptyBrand);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Brand Deleted',
-            life: 3000
-        });
+    const deleteBrand = async () => {
+        try {
+            setLoading(true);
+            await BrandService.deleteBrand((brand as any).brand_id);
+            toast.current?.show({
+                severity: 'success',
+                summary: t('crud:common.success'),
+                detail: t('crud:brands.deleteSuccess'),
+                life: 3000
+            });
+            await loadData();
+            setDeleteBrandDialog(false);
+            setBrand(emptyBrand);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:brands.deleteError'),
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const findIndexById = (id: number) => {
@@ -176,31 +186,68 @@ const Brands = () => {
         return Math.floor(Math.random() * 1000);
     };
 
-    const exportCSV = () => {
-        dt.current?.exportCSV();
+    const exportCSV = async () => {
+        try {
+            setLoading(true);
+            const blob = await BrandService.exportBrands();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'brands.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            toast.current?.show({
+                severity: 'success',
+                summary: t('crud:common.success'),
+                detail: t('crud:brands.exportSuccess'),
+                life: 3000
+            });
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:brands.exportError'),
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const confirmDeleteSelected = () => {
         setDeleteBrandsDialog(true);
     };
 
-    const deleteSelectedBrands = () => {
-        let _brands = brands.filter((val) => !selectedBrands.includes(val));
-        setBrands(_brands);
-        setDeleteBrandsDialog(false);
-        setSelectedBrands([]);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Brands Deleted',
-            life: 3000
-        });
+    const deleteSelectedBrands = async () => {
+        try {
+            setLoading(true);
+            await BrandService.deleteBrands(selectedBrands.map(brand => brand.brand_id));
+            toast.current?.show({
+                severity: 'success',
+                summary: t('crud:common.success'),
+                detail: t('crud:brands.deleteMultipleSuccess'),
+                life: 3000
+            });
+            await loadData();
+            setDeleteBrandsDialog(false);
+            setSelectedBrands([]);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:brands.deleteMultipleError'),
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: keyof Brand) => {
         const val = (e.target && e.target.value) || '';
         let _brand = { ...brand };
-        if (name === 'brand_name') {
+        if (name === 'name') {
             _brand[name] = val;
         }
         setBrand(_brand);
@@ -249,8 +296,12 @@ const Brands = () => {
     const actionBodyTemplate = (rowData: Brand) => {
         return (
             <>
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editBrand(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteBrand(rowData)} />
+                <Permission permissionKey="BRAND_EDIT">
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editBrand(rowData)} />
+                </Permission>
+                <Permission permissionKey="BRAND_DELETE">
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteBrand(rowData)} />
+                </Permission>
             </>
         );
     };
@@ -267,22 +318,22 @@ const Brands = () => {
 
     const brandDialogFooter = (
         <>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveBrand} />
+            <Button label={t('crud:common.cancel')} icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
+            <Button label={t('crud:common.save')} icon="pi pi-check" className="p-button-text" onClick={saveBrand} loading={loading} />
         </>
     );
 
     const deleteBrandDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteBrandDialog} />
-            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteBrand} />
+            <Button label={t('crud:common.no')} icon="pi pi-times" className="p-button-text" onClick={hideDeleteBrandDialog} />
+            <Button label={t('crud:common.yes')} icon="pi pi-check" className="p-button-text" onClick={deleteBrand} loading={loading} />
         </>
     );
 
     const deleteBrandsDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteBrandsDialog} />
-            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedBrands} />
+            <Button label={t('crud:common.no')} icon="pi pi-times" className="p-button-text" onClick={hideDeleteBrandsDialog} />
+            <Button label={t('crud:common.yes')} icon="pi pi-check" className="p-button-text" onClick={deleteSelectedBrands} loading={loading} />
         </>
     );
 
@@ -311,15 +362,15 @@ const Brands = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
                         <Column field="brand_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
-                        <Column field="brand_name" header={t('crud:brands.name')} sortable style={{ minWidth: '12rem' }}></Column>
+                        <Column field="name" header={t('crud:brands.name')} sortable style={{ minWidth: '12rem' }}></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
 
                     <Dialog visible={brandDialog} style={{ width: '450px' }} header={(brand as any).brand_id ? t('crud:common.edit') : t('crud:common.new')} modal className="p-fluid" footer={brandDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="brand_name">{t('crud:brands.name')}</label>
-                            <InputText id="brand_name" value={brand.brand_name} onChange={(e) => onInputChange(e, 'brand_name')} required autoFocus className={classNames({ 'p-invalid': submitted && !brand.brand_name })} />
-                            {submitted && !brand.brand_name && <small className="p-invalid">{t('crud:common.required')}</small>}
+                            <label htmlFor="name">{t('crud:brands.name')}</label>
+                            <InputText id="name" value={brand.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !brand.name })} />
+                            {submitted && !brand.name && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                     </Dialog>
 

@@ -10,11 +10,14 @@ import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import { Calendar } from 'primereact/calendar';
+import { Dropdown } from 'primereact/dropdown';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../app/contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
 import BatchService, { Batch, BatchCreateDTO } from '../../../../../src/services/BatchService';
+import ProductService from '../../../../../src/services/ProductService';
+import { Product } from '../../../../../src/types/product';
 
 const Batches = () => {
     let emptyBatch: BatchCreateDTO = {
@@ -41,6 +44,7 @@ const Batches = () => {
     const dt = useRef<DataTable<Batch[]>>(null);
     const { hasPermission } = useAuth();
     const { t } = useLanguage();
+    const [products, setProducts] = useState<Product[]>([]);
 
     const loadData = useCallback(async () => {
         try {
@@ -59,9 +63,31 @@ const Batches = () => {
         }
     }, [t]);
 
+    const loadProducts = useCallback(async () => {
+        try {
+            const data = await ProductService.getProducts();
+            setProducts(data);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:products.loadError'),
+                life: 3000
+            });
+        }
+    }, [t]);
+
     useEffect(() => {
-        loadData();
-    }, [loadData]);
+        const initializeData = async () => {
+            setLoading(true);
+            try {
+                await Promise.all([loadData(), loadProducts()]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        initializeData();
+    }, [loadData, loadProducts]);
 
     const openNew = () => {
         setBatch(emptyBatch);
@@ -134,21 +160,35 @@ const Batches = () => {
     const deleteBatch = async () => {
         try {
             setLoading(true);
-            await BatchService.deleteBatch((batch as any).batch_id);
-            toast.current?.show({
-                severity: 'success',
-                summary: t('crud:common.success'),
-                detail: t('crud:batches.deleteSuccess'),
-                life: 3000
-            });
+            if (deleteBatchesDialog) {
+                // Multiple delete
+                await Promise.all(selectedBatches.map(batch => BatchService.deleteBatch(batch.batch_id)));
+                toast.current?.show({
+                    severity: 'success',
+                    summary: t('crud:common.success'),
+                    detail: t('crud:batches.deleteMultipleSuccess'),
+                    life: 3000
+                });
+            } else {
+                // Single delete
+                await BatchService.deleteBatch((batch as any).batch_id);
+                toast.current?.show({
+                    severity: 'success',
+                    summary: t('crud:common.success'),
+                    detail: t('crud:batches.deleteSuccess'),
+                    life: 3000
+                });
+            }
             await loadData();
             setDeleteBatchDialog(false);
+            setDeleteBatchesDialog(false);
             setBatch(emptyBatch);
+            setSelectedBatches([]);
         } catch (error) {
             toast.current?.show({
                 severity: 'error',
                 summary: t('crud:common.error'),
-                detail: t('crud:batches.deleteError'),
+                detail: deleteBatchesDialog ? t('crud:batches.deleteMultipleError') : t('crud:batches.deleteError'),
                 life: 3000
             });
         } finally {
@@ -235,6 +275,11 @@ const Batches = () => {
         setBatch(_batch);
     };
 
+    const getProductName = (productId: number) => {
+        const product = products.find(p => p.product_id === productId);
+        return product ? product.name : '';
+    };
+
     const leftToolbarTemplate = () => {
         return (
             <div className="my-2">
@@ -278,7 +323,7 @@ const Batches = () => {
     const actionBodyTemplate = (rowData: Batch) => {
         return (
             <>
-                <Permission permissionKey="BATCH_UPDATE">
+                <Permission permissionKey="BATCH_EDIT">
                     <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editBatch(rowData)} />
                 </Permission>
                 <Permission permissionKey="BATCH_DELETE">
@@ -352,7 +397,7 @@ const Batches = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
                         <Column field="batch_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
-                        <Column field="product_id" header={t('crud:batches.product')} sortable style={{ minWidth: '10rem' }}></Column>
+                        <Column field="product_id" header={t('crud:batches.product')} sortable style={{ minWidth: '10rem' }} body={(rowData) => getProductName(rowData.product_id)}></Column>
                         <Column field="batch_number" header={t('crud:batches.batchNumber')} sortable style={{ minWidth: '12rem' }}></Column>
                         <Column field="manufacture_date" header={t('crud:batches.manufactureDate')} body={(rowData) => dateBodyTemplate(rowData, 'manufacture_date')} sortable style={{ minWidth: '12rem' }}></Column>
                         <Column field="expiration_date" header={t('crud:batches.expirationDate')} body={(rowData) => dateBodyTemplate(rowData, 'expiration_date')} sortable style={{ minWidth: '12rem' }}></Column>
@@ -371,7 +416,17 @@ const Batches = () => {
                         </div>
                         <div className="field">
                             <label htmlFor="product_id">{t('crud:batches.product')}</label>
-                            <InputNumber id="product_id" value={batch.product_id} onValueChange={(e) => onInputNumberChange(e, 'product_id')} />
+                            <Dropdown
+                                id="product_id"
+                                value={batch.product_id}
+                                onChange={(e) => onInputNumberChange(e, 'product_id')}
+                                options={products}
+                                optionLabel="name"
+                                optionValue="product_id"
+                                placeholder={t('crud:batches.selectProduct')}
+                                className={classNames({ 'p-invalid': submitted && !batch.product_id })}
+                            />
+                            {submitted && !batch.product_id && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="manufacture_date">{t('crud:batches.manufactureDate')}</label>

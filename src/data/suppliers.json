@@ -1,0 +1,22 @@
+{
+    "suppliers": [
+        {
+            "supplier_id": 1,
+            "name": "ABC Electronics",
+            "contact_info": "123 Main St, City, Country\nPhone: +1 234 567 8900\nEmail: info@abcelectronics.com",
+            "is_deleted": false
+        },
+        {
+            "supplier_id": 2,
+            "name": "XYZ Technologies",
+            "contact_info": "456 Tech Ave, City, Country\nPhone: +1 234 567 8901\nEmail: info@xyztech.com",
+            "is_deleted": false
+        },
+        {
+            "supplier_id": 3,
+            "name": "Global Supplies",
+            "contact_info": "789 Global Rd, City, Country\nPhone: +1 234 567 8902\nEmail: info@globalsupplies.com",
+            "is_deleted": false
+        }
+    ]
+} 

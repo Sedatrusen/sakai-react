@@ -14,10 +14,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../app/contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
-import ProductService, { Product, ProductCreateDTO, ProductUpdateDTO } from '../../../../../src/services/ProductService';
+import ProductService, { ProductCreateDTO, ProductUpdateDTO } from '../../../../../src/services/ProductService';
+import { Product } from '../../../../../src/types/product';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { Tag } from 'primereact/tag';
+import { Supplier } from '../../../../../src/types/supplier';
+import { Brand } from '../../../../../src/types/brand';
+import { Model } from '../../../../../src/types/model';
+import ModelService from '../../../../../src/services/ModelService';
 
 const Products = () => {
     let emptyProduct: ProductCreateDTO = {
@@ -37,9 +42,11 @@ const Products = () => {
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
     const [loading, setLoading] = useState(false);
-    const [suppliers, setSuppliers] = useState([]);
-    const [brands, setBrands] = useState([]);
-    const [models, setModels] = useState([]);
+    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [models, setModels] = useState<Model[]>([]);
+    const [filteredModels, setFilteredModels] = useState<Model[]>([]);
+    const [selectedBrandId, setSelectedBrandId] = useState<number | null>(null);
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable<Product[]>>(null);
     const { hasPermission } = useAuth();
@@ -52,22 +59,38 @@ const Products = () => {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [productsData, suppliersData, brandsData, modelsData] = await Promise.all([
+            const [productsData, suppliersData, brandsData] = await Promise.all([
                 ProductService.getProducts(),
-                // TODO: Implement other service calls
-                Promise.resolve([]),
-                Promise.resolve([]),
-                Promise.resolve([])
+                ProductService.getSuppliers(),
+                ProductService.getBrands()
             ]);
             setProducts(productsData);
             setSuppliers(suppliersData);
             setBrands(brandsData);
-            setModels(modelsData);
+            setModels([]);
+            setFilteredModels([]);
         } catch (error) {
             toast.current?.show({
                 severity: 'error',
-                summary: 'Error',
-                detail: 'Failed to load data',
+                summary: t('crud:common.error'),
+                detail: t('crud:products.loadError'),
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadModelsByBrand = async (brandId: number) => {
+        try {
+            setLoading(true);
+            const data = await ModelService.getModelsByBrand(brandId);
+            setFilteredModels(data);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:models.loadError'),
                 life: 3000
             });
         } finally {
@@ -135,6 +158,8 @@ const Products = () => {
 
     const editProduct = (product: Product) => {
         setProduct({ ...product });
+        setSelectedBrandId(product.brand_id);
+        loadModelsByBrand(product.brand_id);
         setProductDialog(true);
     };
 
@@ -232,7 +257,14 @@ const Products = () => {
     const onInputNumberChange = (e: any, name: keyof ProductCreateDTO) => {
         const val = e.value || 0;
         let _product = { ...product };
-        if (name === 'supplier_id' || name === 'brand_id' || name === 'model_id') {
+        if (name === 'supplier_id') {
+            _product[name] = val;
+        } else if (name === 'brand_id') {
+            _product[name] = val;
+            _product.model_id = 0; // Reset model when brand changes
+            setSelectedBrandId(val);
+            loadModelsByBrand(val);
+        } else if (name === 'model_id') {
             _product[name] = val;
         }
         setProduct(_product);
@@ -281,7 +313,7 @@ const Products = () => {
     const actionBodyTemplate = (rowData: Product) => {
         return (
             <>
-                <Permission permissionKey="PRODUCT_UPDATE">
+                <Permission permissionKey="PRODUCT_EDIT">
                     <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} />
                 </Permission>
                 <Permission permissionKey="PRODUCT_DELETE">
@@ -349,9 +381,36 @@ const Products = () => {
                         <Column field="product_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
                         <Column field="name" header={t('crud:products.name')} sortable style={{ minWidth: '12rem' }}></Column>
                         <Column field="description" header={t('crud:products.description')} sortable style={{ minWidth: '16rem' }}></Column>
-                        <Column field="supplier_id" header={t('crud:products.supplier')} sortable style={{ minWidth: '10rem' }}></Column>
-                        <Column field="brand_id" header={t('crud:products.brand')} sortable style={{ minWidth: '10rem' }}></Column>
-                        <Column field="model_id" header={t('crud:products.model')} sortable style={{ minWidth: '10rem' }}></Column>
+                        <Column 
+                            field="supplier_id" 
+                            header={t('crud:products.supplier')} 
+                            sortable 
+                            style={{ minWidth: '10rem' }}
+                            body={(rowData) => {
+                                const supplier = suppliers.find(s => s.supplier_id === rowData.supplier_id);
+                                return supplier ? supplier.name : '';
+                            }}
+                        ></Column>
+                        <Column 
+                            field="brand_id" 
+                            header={t('crud:products.brand')} 
+                            sortable 
+                            style={{ minWidth: '10rem' }}
+                            body={(rowData) => {
+                                const brand = brands.find(b => b.brand_id === rowData.brand_id);
+                                return brand ? brand.name : '';
+                            }}
+                        ></Column>
+                        <Column 
+                            field="model_id" 
+                            header={t('crud:products.model')} 
+                            sortable 
+                            style={{ minWidth: '10rem' }}
+                            body={(rowData) => {
+                                const model = models.find(m => m.model_id === rowData.model_id);
+                                return model ? model.name : '';
+                            }}
+                        ></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
 
@@ -367,15 +426,47 @@ const Products = () => {
                         </div>
                         <div className="field">
                             <label htmlFor="supplier_id">{t('crud:products.supplier')}</label>
-                            <InputNumber id="supplier_id" value={product.supplier_id} onValueChange={(e) => onInputNumberChange(e, 'supplier_id')} />
+                            <Dropdown
+                                id="supplier_id"
+                                value={product.supplier_id}
+                                onChange={(e) => onInputNumberChange(e, 'supplier_id')}
+                                options={suppliers}
+                                optionLabel="name"
+                                optionValue="supplier_id"
+                                placeholder={t('crud:products.selectSupplier')}
+                                className={classNames({ 'p-invalid': submitted && !product.supplier_id })}
+                            />
+                            {submitted && !product.supplier_id && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="brand_id">{t('crud:products.brand')}</label>
-                            <InputNumber id="brand_id" value={product.brand_id} onValueChange={(e) => onInputNumberChange(e, 'brand_id')} />
+                            <Dropdown
+                                id="brand_id"
+                                value={product.brand_id}
+                                onChange={(e) => onInputNumberChange(e, 'brand_id')}
+                                options={brands}
+                                optionLabel="name"
+                                optionValue="brand_id"
+                                placeholder={t('crud:products.selectBrand')}
+                                className={classNames({ 'p-invalid': submitted && !product.brand_id })}
+                            />
+                            {submitted && !product.brand_id && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="model_id">{t('crud:products.model')}</label>
-                            <InputNumber id="model_id" value={product.model_id} onValueChange={(e) => onInputNumberChange(e, 'model_id')} />
+                            <Dropdown
+                                id="model_id"
+                                value={product.model_id}
+                                onChange={(e) => onInputNumberChange(e, 'model_id')}
+                                options={filteredModels}
+                                optionLabel="name"
+                                optionValue="model_id"
+                                placeholder={t('crud:products.selectModel')}
+                                disabled={!product.brand_id}
+                                className={classNames({ 'p-invalid': submitted && !product.model_id })}
+                            />
+                            {submitted && !product.model_id && <small className="p-invalid">{t('crud:common.required')}</small>}
+                            {!product.brand_id && <small className="p-invalid">{t('crud:products.selectBrandFirst')}</small>}
                         </div>
                     </Dialog>
 

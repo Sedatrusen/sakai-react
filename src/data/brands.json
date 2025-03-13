@@ -1,0 +1,19 @@
+{
+    "brands": [
+        {
+            "brand_id": 1,
+            "name": "Dell",
+            "is_deleted": false
+        },
+        {
+            "brand_id": 2,
+            "name": "HP",
+            "is_deleted": false
+        },
+        {
+            "brand_id": 3,
+            "name": "Lenovo",
+            "is_deleted": false
+        }
+    ]
+} 

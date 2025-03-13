@@ -1,16 +1,11 @@
-import axios from 'axios';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
-export interface Product {
-    product_id: number;
-    name: string;
-    description: string;
-    supplier_id: number;
-    brand_id: number;
-    model_id: number;
-    is_deleted: boolean;
-}
+import { Product } from '../types/product';
+import { Supplier } from '../types/supplier';
+import { Brand } from '../types/brand';
+import { Model } from '../types/model';
+import productsData from '../data/products.json';
+import suppliersData from '../data/suppliers.json';
+import brandsData from '../data/brands.json';
+import modelsData from '../data/models.json';
 
 export interface ProductCreateDTO {
     name: string;
@@ -25,49 +20,84 @@ export interface ProductUpdateDTO extends ProductCreateDTO {
 }
 
 class ProductService {
+    private products: Product[] = productsData.products;
+    private suppliers: Supplier[] = suppliersData.suppliers;
+    private brands: Brand[] = brandsData.brands;
+    private models: Model[] = modelsData.models;
+
     async getProducts(): Promise<Product[]> {
-        const response = await axios.get(`${API_URL}/products`);
-        return response.data;
+        return this.products.filter(product => !product.is_deleted);
     }
 
     async getProduct(id: number): Promise<Product> {
-        const response = await axios.get(`${API_URL}/products/${id}`);
-        return response.data;
+        const product = this.products.find(p => p.product_id === id && !p.is_deleted);
+        if (!product) {
+            throw new Error('Product not found');
+        }
+        return product;
     }
 
     async createProduct(product: ProductCreateDTO): Promise<Product> {
-        const response = await axios.post(`${API_URL}/products`, product);
-        return response.data;
+        const newProduct: Product = {
+            product_id: Math.max(...this.products.map(p => p.product_id)) + 1,
+            ...product,
+            is_deleted: false
+        };
+        this.products.push(newProduct);
+        return newProduct;
     }
 
     async updateProduct(product: ProductUpdateDTO): Promise<Product> {
-        const response = await axios.put(`${API_URL}/products/${product.product_id}`, product);
-        return response.data;
+        const index = this.products.findIndex(p => p.product_id === product.product_id);
+        if (index === -1) {
+            throw new Error('Product not found');
+        }
+        this.products[index] = { ...this.products[index], ...product };
+        return this.products[index];
     }
 
     async deleteProduct(id: number): Promise<void> {
-        await axios.delete(`${API_URL}/products/${id}`);
+        const index = this.products.findIndex(p => p.product_id === id);
+        if (index === -1) {
+            throw new Error('Product not found');
+        }
+        this.products[index].is_deleted = true;
     }
 
     async deleteProducts(ids: number[]): Promise<void> {
-        await axios.post(`${API_URL}/products/batch-delete`, { ids });
+        ids.forEach(id => {
+            const index = this.products.findIndex(p => p.product_id === id);
+            if (index !== -1) {
+                this.products[index].is_deleted = true;
+            }
+        });
     }
 
     async importProducts(file: File): Promise<void> {
-        const formData = new FormData();
-        formData.append('file', file);
-        await axios.post(`${API_URL}/products/import`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        // Mock implementation
+        console.log('Importing products from file:', file.name);
     }
 
     async exportProducts(): Promise<Blob> {
-        const response = await axios.get(`${API_URL}/products/export`, {
-            responseType: 'blob',
-        });
-        return response.data;
+        // Mock implementation
+        const csv = this.products
+            .filter(p => !p.is_deleted)
+            .map(p => `${p.product_id},${p.name},${p.description},${p.supplier_id},${p.brand_id},${p.model_id}`)
+            .join('\n');
+        return new Blob([csv], { type: 'text/csv' });
+    }
+
+    // İlişkili verileri getirmek için yardımcı metodlar
+    async getSuppliers(): Promise<Supplier[]> {
+        return this.suppliers.filter(supplier => !supplier.is_deleted);
+    }
+
+    async getBrands(): Promise<Brand[]> {
+        return this.brands.filter(brand => !brand.is_deleted);
+    }
+
+    async getModels(): Promise<Model[]> {
+        return this.models.filter(model => !model.is_deleted);
     }
 }
 

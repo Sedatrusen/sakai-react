@@ -9,33 +9,29 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
+import { Dropdown } from 'primereact/dropdown';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../app/contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
-
-interface Model {
-    model_id: number;
-    brand_id: number;
-    name: string;
-    model_name: string;
-    is_deleted: boolean;
-}
+import ModelService, { ModelCreateDTO } from '../../../../../src/services/ModelService';
+import BrandService from '../../../../../src/services/BrandService';
+import { Model } from '../../../../../src/types/model';
+import { Brand } from '../../../../../src/types/brand';
 
 const Models = () => {
-    let emptyModel: Model = {
-        model_id: 0,
+    let emptyModel: ModelCreateDTO = {
         brand_id: 0,
         name: '',
-        model_name: '',
-        is_deleted: false
+        model_name: ''
     };
 
     const [models, setModels] = useState<Model[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
     const [modelDialog, setModelDialog] = useState(false);
     const [deleteModelDialog, setDeleteModelDialog] = useState(false);
     const [deleteModelsDialog, setDeleteModelsDialog] = useState(false);
-    const [model, setModel] = useState<Model>(emptyModel);
+    const [model, setModel] = useState<ModelCreateDTO>(emptyModel);
     const [selectedModels, setSelectedModels] = useState<Model[]>([]);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -47,14 +43,14 @@ const Models = () => {
 
     useEffect(() => {
         loadData();
+        loadBrands();
     }, []);
 
     const loadData = async () => {
         try {
             setLoading(true);
-            // TODO: Implement API call to fetch models
-            // const data = await ModelService.getModels();
-            // setModels(data);
+            const data = await ModelService.getModels();
+            setModels(data);
         } catch (error) {
             toast.current?.show({
                 severity: 'error',
@@ -67,11 +63,24 @@ const Models = () => {
         }
     };
 
+    const loadBrands = async () => {
+        try {
+            const data = await BrandService.getBrands();
+            setBrands(data);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:brands.loadError'),
+                life: 3000
+            });
+        }
+    };
+
     const onUpload = async (event: any) => {
         try {
             setLoading(true);
-            // TODO: Implement API call to import models
-            // await ModelService.importModels(event.files[0]);
+            await ModelService.importModels(event.files[0]);
             toast.current?.show({
                 severity: 'success',
                 summary: t('crud:common.success'),
@@ -93,7 +102,6 @@ const Models = () => {
 
     const openNew = () => {
         setModel(emptyModel);
-        setSubmitted(false);
         setModelDialog(true);
     };
 
@@ -110,60 +118,78 @@ const Models = () => {
         setDeleteModelsDialog(false);
     };
 
-    const saveModel = () => {
+    const saveModel = async () => {
         setSubmitted(true);
 
-        if (model.model_name.trim()) {
-            let _models = [...models];
-            let _model = { ...model };
-            
-            if (model.model_id) {
-                const index = findIndexById(model.model_id);
-                _models[index] = _model;
+        if (model.name.trim()) {
+            try {
+                setLoading(true);
+                if ((model as any).model_id) {
+                    await ModelService.updateModel(model as any);
+                    toast.current?.show({
+                        severity: 'success',
+                        summary: t('crud:common.success'),
+                        detail: t('crud:models.updateSuccess'),
+                        life: 3000
+                    });
+                } else {
+                    await ModelService.createModel(model);
+                    toast.current?.show({
+                        severity: 'success',
+                        summary: t('crud:common.success'),
+                        detail: t('crud:models.createSuccess'),
+                        life: 3000
+                    });
+                }
+                await loadData();
+                setModelDialog(false);
+                setModel(emptyModel);
+            } catch (error) {
                 toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Model Updated',
+                    severity: 'error',
+                    summary: t('crud:common.error'),
+                    detail: t('crud:models.saveError'),
                     life: 3000
                 });
-            } else {
-                _model.model_id = createId();
-                _models.push(_model);
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Model Created',
-                    life: 3000
-                });
+            } finally {
+                setLoading(false);
             }
-
-            setModels(_models);
-            setModelDialog(false);
-            setModel(emptyModel);
         }
     };
 
     const editModel = (model: Model) => {
-        setModel({ ...model });
+        setModel({ ...model, model_name: model.name });
         setModelDialog(true);
     };
 
     const confirmDeleteModel = (model: Model) => {
-        setModel(model);
+        setModel({ ...model, model_name: model.name });
         setDeleteModelDialog(true);
     };
 
-    const deleteModel = () => {
-        let _models = models.filter((val) => val.model_id !== model.model_id);
-        setModels(_models);
-        setDeleteModelDialog(false);
-        setModel(emptyModel);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Model Deleted',
-            life: 3000
-        });
+    const deleteModel = async () => {
+        try {
+            setLoading(true);
+            await ModelService.deleteModel((model as any).model_id);
+            toast.current?.show({
+                severity: 'success',
+                summary: t('crud:common.success'),
+                detail: t('crud:models.deleteSuccess'),
+                life: 3000
+            });
+            await loadData();
+            setDeleteModelDialog(false);
+            setModel(emptyModel);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:models.deleteError'),
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const findIndexById = (id: number) => {
@@ -181,43 +207,85 @@ const Models = () => {
         return Math.floor(Math.random() * 1000);
     };
 
-    const exportCSV = () => {
-        dt.current?.exportCSV();
+    const exportCSV = async () => {
+        try {
+            setLoading(true);
+            const blob = await ModelService.exportModels();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'models.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            toast.current?.show({
+                severity: 'success',
+                summary: t('crud:common.success'),
+                detail: t('crud:models.exportSuccess'),
+                life: 3000
+            });
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:models.exportError'),
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const confirmDeleteSelected = () => {
         setDeleteModelsDialog(true);
     };
 
-    const deleteSelectedModels = () => {
-        let _models = models.filter((val) => !selectedModels.includes(val));
-        setModels(_models);
-        setDeleteModelsDialog(false);
-        setSelectedModels([]);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Models Deleted',
-            life: 3000
-        });
+    const deleteSelectedModels = async () => {
+        try {
+            setLoading(true);
+            await ModelService.deleteModels(selectedModels.map(model => model.model_id));
+            toast.current?.show({
+                severity: 'success',
+                summary: t('crud:common.success'),
+                detail: t('crud:models.deleteMultipleSuccess'),
+                life: 3000
+            });
+            await loadData();
+            setDeleteModelsDialog(false);
+            setSelectedModels([]);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: t('crud:common.error'),
+                detail: t('crud:models.deleteMultipleError'),
+                life: 3000
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: keyof Model) => {
+    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: keyof ModelCreateDTO) => {
         const val = (e.target && e.target.value) || '';
         let _model = { ...model };
-        if (name === 'model_name') {
+        if (name === 'name' || name === 'model_name') {
             _model[name] = val;
         }
         setModel(_model);
     };
 
-    const onInputNumberChange = (e: any, name: keyof Model) => {
+    const onInputNumberChange = (e: any, name: keyof ModelCreateDTO) => {
         const val = e.value || 0;
         let _model = { ...model };
         if (name === 'brand_id') {
             _model[name] = val;
         }
         setModel(_model);
+    };
+
+    const getBrandName = (brandId: number) => {
+        const brand = brands.find(b => b.brand_id === brandId);
+        return brand ? brand.name : '';
     };
 
     const leftToolbarTemplate = () => {
@@ -231,7 +299,7 @@ const Models = () => {
                         label={t('crud:common.delete')} 
                         icon="pi pi-trash" 
                         severity="danger" 
-                        onClick={() => setDeleteModelsDialog(true)} 
+                        onClick={confirmDeleteSelected} 
                         disabled={!selectedModels || !selectedModels.length} 
                     />
                 </Permission>
@@ -263,8 +331,12 @@ const Models = () => {
     const actionBodyTemplate = (rowData: Model) => {
         return (
             <>
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editModel(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteModel(rowData)} />
+                <Permission permissionKey="MODEL_EDIT">
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editModel(rowData)} />
+                </Permission>
+                <Permission permissionKey="MODEL_DELETE">
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteModel(rowData)} />
+                </Permission>
             </>
         );
     };
@@ -326,19 +398,36 @@ const Models = () => {
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
                         <Column field="model_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
                         <Column field="name" header={t('crud:models.name')} sortable style={{ minWidth: '12rem' }}></Column>
-                        <Column field="brand_id" header={t('crud:models.brand')} sortable style={{ minWidth: '10rem' }}></Column>
+                        <Column field="brand_id" header={t('crud:models.brand')} sortable style={{ minWidth: '10rem' }} body={(rowData) => getBrandName(rowData.brand_id)}></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
 
                     <Dialog visible={modelDialog} style={{ width: '450px' }} header={(model as any).model_id ? t('crud:common.edit') : t('crud:common.new')} modal className="p-fluid" footer={modelDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="name">{t('crud:models.name')}</label>
-                            <InputText id="name" value={model.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !model.name })} />
-                            {submitted && !model.name && <small className="p-invalid">{t('crud:common.required')}</small>}
+                            <label htmlFor="brand_id">{t('crud:models.brand')}</label>
+                            <Dropdown
+                                id="brand_id"
+                                value={model.brand_id}
+                                onChange={(e) => onInputNumberChange(e, 'brand_id')}
+                                options={brands}
+                                optionLabel="name"
+                                optionValue="brand_id"
+                                placeholder={t('crud:models.selectBrand')}
+                                className={classNames({ 'p-invalid': submitted && !model.brand_id })}
+                            />
+                            {submitted && !model.brand_id && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="brand_id">{t('crud:models.brand')}</label>
-                            <InputNumber id="brand_id" value={model.brand_id} onValueChange={(e) => onInputNumberChange(e, 'brand_id')} />
+                            <label htmlFor="name">{t('crud:models.name')}</label>
+                            <InputText 
+                                id="name" 
+                                value={model.name} 
+                                onChange={(e) => onInputChange(e, 'name')} 
+                                required 
+                                autoFocus 
+                                className={classNames({ 'p-invalid': submitted && !model.name })} 
+                            />
+                            {submitted && !model.name && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                     </Dialog>
 
