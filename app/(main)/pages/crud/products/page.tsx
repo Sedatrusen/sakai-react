@@ -12,7 +12,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
-import { useLanguage } from '../../../../../app/contexts/LanguageContext';
+import { useLanguage } from '../../../../../contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
 import ProductService, { ProductCreateDTO, ProductUpdateDTO } from '../../../../../src/services/ProductService';
 import { Product } from '../../../../../src/types/product';

@@ -1,7 +1,7 @@
 'use client';
 import { LayoutProvider } from '../layout/context/layoutcontext';
 import { PrimeReactProvider } from 'primereact/api';
-import { LanguageProvider } from './contexts/LanguageContext';
+import { LanguageProvider } from '../contexts/LanguageContext';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';

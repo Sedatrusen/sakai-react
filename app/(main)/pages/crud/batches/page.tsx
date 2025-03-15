@@ -13,7 +13,7 @@ import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
-import { useLanguage } from '../../../../../app/contexts/LanguageContext';
+import { useLanguage } from '../../../../../contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
 import BatchService, { Batch, BatchCreateDTO } from '../../../../../src/services/BatchService';
 import ProductService from '../../../../../src/services/ProductService';

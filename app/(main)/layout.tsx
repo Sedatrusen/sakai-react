@@ -3,7 +3,7 @@
 import Layout from '../../layout/layout';
 import { AuthProvider } from '../../contexts/AuthContext';
 import ProtectedRoute from '../../components/ProtectedRoute';
-import { LanguageProvider } from '../../app/contexts/LanguageContext';
+import { LanguageProvider } from '../../contexts/LanguageContext';
 
 interface AppLayoutProps {
     children: React.ReactNode;
