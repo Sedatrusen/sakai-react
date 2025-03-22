@@ -17,7 +17,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ProductService } from '../../../../demo/service/ProductService';
 import { Demo } from '@/types';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { useLanguage } from '../../../../app/contexts/LanguageContext';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 import { Permission } from '../../../../components/Permission';
 
 /* @todo Used 'as any' for types here. Will fix in next version due to onSelectionChange event type issue. */

@@ -10,7 +10,7 @@ import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { useLanguage } from '../../../../app/contexts/LanguageContext';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
