@@ -9,26 +9,24 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
-import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../app/contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
 import BatchService, { Batch, BatchCreateDTO } from '../../../../../src/services/BatchService';
-import ProductService from '../../../../../src/services/ProductService';
-import { Product } from '../../../../../src/types/product';
+import SupplierService from '../../../../../src/services/SupplierService';
+import { Supplier } from '../../../../../src/types/supplier';
 
 const Batches = () => {
     let emptyBatch: BatchCreateDTO = {
-        product_id: 0,
+        supplier_id: 0,
         batch_number: '',
-        manufacture_date: new Date(),
-        expiration_date: new Date(),
+        batch_qr: Buffer.from(''),
         total_quantity: 0,
-        used_quantity: 0,
-        remaining_quantity: 0,
-        price: 0
+        price: 0,
+        currency_id: 1,
+        current_rate: 0
     };
 
     const [batches, setBatches] = useState<Batch[]>([]);
@@ -44,7 +42,7 @@ const Batches = () => {
     const dt = useRef<DataTable<Batch[]>>(null);
     const { hasPermission } = useAuth();
     const { t } = useLanguage();
-    const [products, setProducts] = useState<Product[]>([]);
+    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
     const loadData = useCallback(async () => {
         try {
@@ -63,15 +61,15 @@ const Batches = () => {
         }
     }, [t]);
 
-    const loadProducts = useCallback(async () => {
+    const loadSuppliers = useCallback(async () => {
         try {
-            const data = await ProductService.getProducts();
-            setProducts(data);
+            const data = await SupplierService.getSuppliers();
+            setSuppliers(data);
         } catch (error) {
             toast.current?.show({
                 severity: 'error',
                 summary: t('crud:common.error'),
-                detail: t('crud:products.loadError'),
+                detail: t('crud:suppliers.loadError'),
                 life: 3000
             });
         }
@@ -81,13 +79,13 @@ const Batches = () => {
         const initializeData = async () => {
             setLoading(true);
             try {
-                await Promise.all([loadData(), loadProducts()]);
+                await Promise.all([loadData(), loadSuppliers()]);
             } finally {
                 setLoading(false);
             }
         };
         initializeData();
-    }, [loadData, loadProducts]);
+    }, [loadData, loadSuppliers]);
 
     const openNew = () => {
         setBatch(emptyBatch);
@@ -161,7 +159,6 @@ const Batches = () => {
         try {
             setLoading(true);
             if (deleteBatchesDialog) {
-                // Multiple delete
                 await Promise.all(selectedBatches.map(batch => BatchService.deleteBatch(batch.batch_id)));
                 toast.current?.show({
                     severity: 'success',
@@ -170,7 +167,6 @@ const Batches = () => {
                     life: 3000
                 });
             } else {
-                // Single delete
                 await BatchService.deleteBatch((batch as any).batch_id);
                 toast.current?.show({
                     severity: 'success',
@@ -260,24 +256,15 @@ const Batches = () => {
     const onInputNumberChange = (e: any, name: keyof BatchCreateDTO) => {
         const val = e.value || 0;
         let _batch = { ...batch };
-        if (name === 'product_id' || name === 'total_quantity' || name === 'used_quantity' || name === 'remaining_quantity' || name === 'price') {
+        if (name === 'supplier_id' || name === 'total_quantity' || name === 'price' || name === 'currency_id' || name === 'current_rate') {
             _batch[name] = val;
         }
         setBatch(_batch);
     };
 
-    const onDateChange = (e: any, name: keyof BatchCreateDTO) => {
-        const val = e.value || new Date();
-        let _batch = { ...batch };
-        if (name === 'manufacture_date' || name === 'expiration_date') {
-            _batch[name] = val;
-        }
-        setBatch(_batch);
-    };
-
-    const getProductName = (productId: number) => {
-        const product = products.find(p => p.product_id === productId);
-        return product ? product.name : '';
+    const getSupplierName = (supplierId: number) => {
+        const supplier = suppliers.find(s => s.supplier_id === supplierId);
+        return supplier ? supplier.name : '';
     };
 
     const leftToolbarTemplate = () => {
@@ -364,14 +351,6 @@ const Batches = () => {
         </>
     );
 
-    const formatDate = (value: any) => {
-        return value ? new Date(value).toLocaleDateString() : '';
-    };
-
-    const dateBodyTemplate = (rowData: any, field: keyof Batch) => {
-        return formatDate(rowData[field]);
-    };
-
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -397,14 +376,12 @@ const Batches = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
                         <Column field="batch_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
-                        <Column field="product_id" header={t('crud:batches.product')} sortable style={{ minWidth: '10rem' }} body={(rowData) => getProductName(rowData.product_id)}></Column>
+                        <Column field="supplier_id" header={t('crud:batches.supplier')} sortable style={{ minWidth: '10rem' }} body={(rowData) => getSupplierName(rowData.supplier_id)}></Column>
                         <Column field="batch_number" header={t('crud:batches.batchNumber')} sortable style={{ minWidth: '12rem' }}></Column>
-                        <Column field="manufacture_date" header={t('crud:batches.manufactureDate')} body={(rowData) => dateBodyTemplate(rowData, 'manufacture_date')} sortable style={{ minWidth: '12rem' }}></Column>
-                        <Column field="expiration_date" header={t('crud:batches.expirationDate')} body={(rowData) => dateBodyTemplate(rowData, 'expiration_date')} sortable style={{ minWidth: '12rem' }}></Column>
                         <Column field="total_quantity" header={t('crud:batches.totalQuantity')} sortable style={{ minWidth: '10rem' }}></Column>
-                        <Column field="used_quantity" header={t('crud:batches.usedQuantity')} sortable style={{ minWidth: '10rem' }}></Column>
-                        <Column field="remaining_quantity" header={t('crud:batches.remainingQuantity')} sortable style={{ minWidth: '10rem' }}></Column>
                         <Column field="price" header={t('crud:batches.price')} sortable style={{ minWidth: '8rem' }}></Column>
+                        <Column field="currency_id" header={t('crud:batches.currency')} sortable style={{ minWidth: '8rem' }}></Column>
+                        <Column field="current_rate" header={t('crud:batches.currentRate')} sortable style={{ minWidth: '8rem' }}></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
 
@@ -415,42 +392,44 @@ const Batches = () => {
                             {submitted && !batch.batch_number && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="product_id">{t('crud:batches.product')}</label>
+                            <label htmlFor="supplier_id">{t('crud:batches.supplier')}</label>
                             <Dropdown
-                                id="product_id"
-                                value={batch.product_id}
-                                onChange={(e) => onInputNumberChange(e, 'product_id')}
-                                options={products}
+                                id="supplier_id"
+                                value={batch.supplier_id}
+                                onChange={(e) => onInputNumberChange(e, 'supplier_id')}
+                                options={suppliers}
                                 optionLabel="name"
-                                optionValue="product_id"
-                                placeholder={t('crud:batches.selectProduct')}
-                                className={classNames({ 'p-invalid': submitted && !batch.product_id })}
+                                optionValue="supplier_id"
+                                placeholder={t('crud:batches.selectSupplier')}
+                                className={classNames({ 'p-invalid': submitted && !batch.supplier_id })}
                             />
-                            {submitted && !batch.product_id && <small className="p-invalid">{t('crud:common.required')}</small>}
-                        </div>
-                        <div className="field">
-                            <label htmlFor="manufacture_date">{t('crud:batches.manufactureDate')}</label>
-                            <Calendar id="manufacture_date" value={batch.manufacture_date} onChange={(e) => onDateChange(e, 'manufacture_date')} showIcon dateFormat="dd/mm/yy" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="expiration_date">{t('crud:batches.expirationDate')}</label>
-                            <Calendar id="expiration_date" value={batch.expiration_date} onChange={(e) => onDateChange(e, 'expiration_date')} showIcon dateFormat="dd/mm/yy" />
+                            {submitted && !batch.supplier_id && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="total_quantity">{t('crud:batches.totalQuantity')}</label>
                             <InputNumber id="total_quantity" value={batch.total_quantity} onValueChange={(e) => onInputNumberChange(e, 'total_quantity')} />
                         </div>
                         <div className="field">
-                            <label htmlFor="used_quantity">{t('crud:batches.usedQuantity')}</label>
-                            <InputNumber id="used_quantity" value={batch.used_quantity} onValueChange={(e) => onInputNumberChange(e, 'used_quantity')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="remaining_quantity">{t('crud:batches.remainingQuantity')}</label>
-                            <InputNumber id="remaining_quantity" value={batch.remaining_quantity} onValueChange={(e) => onInputNumberChange(e, 'remaining_quantity')} />
-                        </div>
-                        <div className="field">
                             <label htmlFor="price">{t('crud:batches.price')}</label>
                             <InputNumber id="price" value={batch.price} onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="TRY" locale="tr-TR" />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="currency_id">{t('crud:batches.currency')}</label>
+                            <Dropdown
+                                id="currency_id"
+                                value={batch.currency_id}
+                                onChange={(e) => onInputNumberChange(e, 'currency_id')}
+                                options={[
+                                    { label: 'TRY', value: 1 },
+                                    { label: 'USD', value: 2 },
+                                    { label: 'EUR', value: 3 }
+                                ]}
+                                placeholder={t('crud:batches.selectCurrency')}
+                            />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="current_rate">{t('crud:batches.currentRate')}</label>
+                            <InputNumber id="current_rate" value={batch.current_rate} onValueChange={(e) => onInputNumberChange(e, 'current_rate')} mode="decimal" minFractionDigits={2} maxFractionDigits={2} />
                         </div>
                     </Dialog>
 

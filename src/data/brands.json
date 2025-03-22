@@ -2,17 +2,27 @@
     "brands": [
         {
             "brand_id": 1,
-            "name": "Dell",
+            "brand_name": "Toyota",
             "is_deleted": false
         },
         {
             "brand_id": 2,
-            "name": "HP",
+            "brand_name": "Honda",
             "is_deleted": false
         },
         {
             "brand_id": 3,
-            "name": "Lenovo",
+            "brand_name": "Ford",
+            "is_deleted": false
+        },
+        {
+            "brand_id": 4,
+            "brand_name": "BMW",
+            "is_deleted": false
+        },
+        {
+            "brand_id": 5,
+            "brand_name": "Mercedes",
             "is_deleted": false
         }
     ]

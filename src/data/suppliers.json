@@ -2,20 +2,27 @@
     "suppliers": [
         {
             "supplier_id": 1,
-            "name": "ABC Electronics",
-            "contact_info": "123 Main St, City, Country\nPhone: +1 234 567 8900\nEmail: info@abcelectronics.com",
+            "name": "Teknik Parça A.Ş.",
             "is_deleted": false
         },
         {
             "supplier_id": 2,
-            "name": "XYZ Technologies",
-            "contact_info": "456 Tech Ave, City, Country\nPhone: +1 234 567 8901\nEmail: info@xyztech.com",
+            "name": "Endüstriyel Malzemeler Ltd.",
             "is_deleted": false
         },
         {
             "supplier_id": 3,
-            "name": "Global Supplies",
-            "contact_info": "789 Global Rd, City, Country\nPhone: +1 234 567 8902\nEmail: info@globalsupplies.com",
+            "name": "Makine Yedek Parça San. Tic.",
+            "is_deleted": false
+        },
+        {
+            "supplier_id": 4,
+            "name": "Otomasyon Sistemleri",
+            "is_deleted": false
+        },
+        {
+            "supplier_id": 5,
+            "name": "Elektronik Komponentler",
             "is_deleted": false
         }
     ]

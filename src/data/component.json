@@ -1,0 +1,37 @@
+{
+    "components": [
+        {
+            "component_id": 1,
+            "name": "Motor",
+            "description": "Ana motor parçası",
+            "component_img": "/images/components/motor.jpg",
+            "model_id": 1,
+            "stok_critical_level": 5,
+            "stok_crirical_level_type_id": 1,
+            "optimum_sayi": 10,
+            "is_deleted": false
+        },
+        {
+            "component_id": 2,
+            "name": "Fren Sistemi",
+            "description": "Fren sistemi parçaları",
+            "component_img": "/images/components/fren.jpg",
+            "model_id": 1,
+            "stok_critical_level": 3,
+            "stok_crirical_level_type_id": 1,
+            "optimum_sayi": 8,
+            "is_deleted": false
+        },
+        {
+            "component_id": 3,
+            "name": "Yağ Filtresi",
+            "description": "Motor yağ filtresi",
+            "component_img": "/images/components/yag-filtresi.jpg",
+            "model_id": 2,
+            "stok_critical_level": 10,
+            "stok_crirical_level_type_id": 1,
+            "optimum_sayi": 20,
+            "is_deleted": false
+        }
+    ]
+} 

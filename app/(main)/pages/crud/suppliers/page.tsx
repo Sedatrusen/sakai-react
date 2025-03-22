@@ -15,11 +15,151 @@ import { useLanguage } from '../../../../../app/contexts/LanguageContext';
 import { Permission } from '../../../../../components/Permission';
 import SupplierService, { SupplierCreateDTO, SupplierUpdateDTO } from '../../../../../src/services/SupplierService';
 import { Supplier } from '../../../../../src/types/supplier';
+import { SupplierInfo } from '../../../../../src/types/supplier_info';
+
+const SupplierInfoRow = ({ data }: { data: Supplier }) => {
+    const [supplierInfos, setSupplierInfos] = useState<SupplierInfo[]>([]);
+    const [editingInfo, setEditingInfo] = useState<SupplierInfo | null>(null);
+    const [deleteInfoDialog, setDeleteInfoDialog] = useState(false);
+    const [infoToDelete, setInfoToDelete] = useState<SupplierInfo | null>(null);
+    const { t } = useLanguage();
+
+    useEffect(() => {
+        loadSupplierInfos();
+    }, [data.supplier_id]);
+
+    const loadSupplierInfos = async () => {
+        const infos = await SupplierService.getSupplierInfos(data.supplier_id);
+        setSupplierInfos(infos);
+    };
+
+    const onEditInfo = (info: SupplierInfo) => {
+        setEditingInfo(info);
+    };
+
+    const onSaveInfo = async () => {
+        if (editingInfo) {
+            try {
+                await SupplierService.updateSupplierInfo(editingInfo);
+                await loadSupplierInfos();
+                setEditingInfo(null);
+            } catch (error) {
+                console.error('Failed to update contact info:', error);
+            }
+        }
+    };
+
+    const onCancelEdit = () => {
+        setEditingInfo(null);
+    };
+
+    const confirmDeleteInfo = (info: SupplierInfo) => {
+        setInfoToDelete(info);
+        setDeleteInfoDialog(true);
+    };
+
+    const deleteInfo = async () => {
+        if (infoToDelete) {
+            try {
+                await SupplierService.deleteSupplierInfo(infoToDelete.supplier_info_id);
+                await loadSupplierInfos();
+                setDeleteInfoDialog(false);
+                setInfoToDelete(null);
+            } catch (error) {
+                console.error('Failed to delete contact info:', error);
+            }
+        }
+    };
+
+    return (
+        <div className="p-3">
+            <div className="flex flex-column gap-3">
+                <h5>{t('crud:suppliers.contactInfo')}</h5>
+                {supplierInfos.length > 0 ? (
+                    <div className="grid">
+                        {supplierInfos.map((info, index) => (
+                            <div key={index} className="col-12 md:col-6 lg:col-4">
+                                <div className="surface-0 shadow-2 p-3 border-round">
+                                    {editingInfo?.supplier_info_id === info.supplier_info_id ? (
+                                        <div className="flex flex-column gap-2">
+                                            <InputText
+                                                value={editingInfo.contact_type}
+                                                onChange={(e) => setEditingInfo({ ...editingInfo, contact_type: e.target.value })}
+                                                placeholder={t('crud:suppliers.contactType')}
+                                                className="w-full"
+                                            />
+                                            <InputText
+                                                value={editingInfo.contact}
+                                                onChange={(e) => setEditingInfo({ ...editingInfo, contact: e.target.value })}
+                                                placeholder={t('crud:suppliers.contactValue')}
+                                                className="w-full"
+                                            />
+                                            <div className="flex gap-2 justify-content-end">
+                                                <Button
+                                                    icon="pi pi-check"
+                                                    className="p-button-rounded p-button-success"
+                                                    onClick={onSaveInfo}
+                                                />
+                                                <Button
+                                                    icon="pi pi-times"
+                                                    className="p-button-rounded p-button-danger"
+                                                    onClick={onCancelEdit}
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="text-900 font-medium text-xl mb-2">{info.contact_type}</div>
+                                            <div className="text-600">{info.contact}</div>
+                                            <div className="flex gap-2 justify-content-end mt-2">
+                                                <Button
+                                                    icon="pi pi-pencil"
+                                                    className="p-button-rounded p-button-success"
+                                                    onClick={() => onEditInfo(info)}
+                                                />
+                                                <Button
+                                                    icon="pi pi-trash"
+                                                    className="p-button-rounded p-button-danger"
+                                                    onClick={() => confirmDeleteInfo(info)}
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>{t('crud:suppliers.noContactInfo')}</p>
+                )}
+            </div>
+
+            <Dialog
+                visible={deleteInfoDialog}
+                style={{ width: '450px' }}
+                header={t('crud:common.confirm')}
+                modal
+                footer={
+                    <>
+                        <Button label={t('crud:common.no')} icon="pi pi-times" className="p-button-text" onClick={() => setDeleteInfoDialog(false)} />
+                        <Button label={t('crud:common.yes')} icon="pi pi-check" className="p-button-text" onClick={deleteInfo} />
+                    </>
+                }
+                onHide={() => setDeleteInfoDialog(false)}
+            >
+                <div className="confirmation-content">
+                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                    <span>{t('crud:suppliers.deleteContactInfoConfirm')}</span>
+                </div>
+            </Dialog>
+        </div>
+    );
+};
 
 const Suppliers = () => {
     let emptySupplier: SupplierCreateDTO = {
         name: '',
-        contact_info: ''
+        contact_infos: []
     };
 
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -31,6 +171,7 @@ const Suppliers = () => {
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
     const [loading, setLoading] = useState(false);
+    const [expandedRows, setExpandedRows] = useState<any>(null);
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable<Supplier[]>>(null);
     const { hasPermission } = useAuth();
@@ -205,7 +346,10 @@ const Suppliers = () => {
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, name: keyof SupplierCreateDTO) => {
         const val = (e.target && e.target.value) || '';
         let _supplier = { ...supplier };
-        _supplier[name] = val;
+        if (name === 'contact_infos') {
+            return; // Skip if trying to modify contact_infos directly
+        }
+        _supplier[name] = val as any;
         setSupplier(_supplier);
     };
 
@@ -277,6 +421,10 @@ const Suppliers = () => {
         );
     };
 
+    const expandedRowTemplate = (data: Supplier) => {
+        return <SupplierInfoRow data={data} />;
+    };
+
     const header = (
         <div className="flex flex-column md:flex-row md:justify-between md:align-items-center">
             <h5 className="m-0">{t('crud:suppliers.title')}</h5>
@@ -340,6 +488,31 @@ const Suppliers = () => {
         return <InputTextarea value={options.value} onChange={(e) => options.editorCallback(e.target.value)} className="p-inputtext-sm" rows={3} cols={20} />;
     };
 
+    const addContactInfo = () => {
+        let _supplier = { ...supplier };
+        if (!_supplier.contact_infos) {
+            _supplier.contact_infos = [];
+        }
+        _supplier.contact_infos.push({ type: '', value: '' });
+        setSupplier(_supplier);
+    };
+
+    const removeContactInfo = (index: number) => {
+        let _supplier = { ...supplier };
+        if (_supplier.contact_infos) {
+            _supplier.contact_infos.splice(index, 1);
+            setSupplier(_supplier);
+        }
+    };
+
+    const onContactInfoChange = (index: number, field: 'type' | 'value', value: string) => {
+        let _supplier = { ...supplier };
+        if (_supplier.contact_infos && _supplier.contact_infos[index]) {
+            _supplier.contact_infos[index][field] = value;
+            setSupplier(_supplier);
+        }
+    };
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -362,12 +535,17 @@ const Suppliers = () => {
                         responsiveLayout="scroll"
                         selectionMode="multiple"
                         loading={loading}
+                        expandedRows={expandedRows}
+                        onRowToggle={(e) => setExpandedRows(e.data)}
+                        expandedRowIcon="pi pi-chevron-down"
+                        collapsedRowIcon="pi pi-chevron-right"
                         editMode="row"
                         onRowEditComplete={onRowEditComplete}
+                        rowExpansionTemplate={expandedRowTemplate}
                     >
+                        <Column expander style={{ width: '3rem' }} />
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
                         <Column field="name" header={t('crud:suppliers.name')} sortable style={{ minWidth: '12rem' }} editor={textEditor}></Column>
-                        <Column field="contact_info" header={t('crud:suppliers.contactInfo')} sortable style={{ minWidth: '16rem' }} editor={textAreaEditor}></Column>
                         <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
@@ -379,8 +557,35 @@ const Suppliers = () => {
                             {submitted && !supplier.name && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="contact_info">{t('crud:suppliers.contactInfo')}</label>
-                            <InputTextarea id="contact_info" value={supplier.contact_info} onChange={(e) => onInputChange(e, 'contact_info')} required rows={3} cols={20} />
+                            <div className="flex justify-content-between align-items-center mb-2">
+                                <label>{t('crud:suppliers.contactInfo')}</label>
+                                <Button icon="pi pi-plus" className="p-button-rounded p-button-text" onClick={addContactInfo} />
+                            </div>
+                            {supplier.contact_infos?.map((info, index) => (
+                                <div key={index} className="flex gap-2 mb-2">
+                                    <div className="flex-1">
+                                        <InputText
+                                            value={info.type}
+                                            onChange={(e) => onContactInfoChange(index, 'type', e.target.value)}
+                                            placeholder={t('crud:suppliers.contactType')}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <InputText
+                                            value={info.value}
+                                            onChange={(e) => onContactInfoChange(index, 'value', e.target.value)}
+                                            placeholder={t('crud:suppliers.contactValue')}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <Button
+                                        icon="pi pi-trash"
+                                        className="p-button-rounded p-button-danger"
+                                        onClick={() => removeContactInfo(index)}
+                                    />
+                                </div>
+                            ))}
                         </div>
                     </Dialog>
 

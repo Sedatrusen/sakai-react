@@ -398,7 +398,7 @@ const Products = () => {
                             style={{ minWidth: '10rem' }}
                             body={(rowData) => {
                                 const brand = brands.find(b => b.brand_id === rowData.brand_id);
-                                return brand ? brand.name : '';
+                                return brand ? brand.brand_name : '';
                             }}
                         ></Column>
                         <Column 

@@ -74,6 +74,11 @@ const AppMenu = () => {
                             label: 'Machines',
                             icon: 'pi pi-fw pi-cog',
                             to: '/pages/crud/machines'
+                        },
+                        {
+                            label: 'Components',
+                            icon: 'pi pi-fw pi-th-large',
+                            to: '/pages/crud/components'
                         }
                     ]
                 },

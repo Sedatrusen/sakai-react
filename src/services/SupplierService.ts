@@ -1,9 +1,16 @@
 import { Supplier } from '../types/supplier';
+import { SupplierInfo } from '../types/supplier_info';
 import suppliersData from '../data/suppliers.json';
+import supplierInfosData from '../data/supplier_info.json';
+
+export interface ContactInfo {
+    type: string;
+    value: string;
+}
 
 export interface SupplierCreateDTO {
     name: string;
-    contact_info: string;
+    contact_infos?: ContactInfo[];
 }
 
 export interface SupplierUpdateDTO extends SupplierCreateDTO {
@@ -12,17 +19,18 @@ export interface SupplierUpdateDTO extends SupplierCreateDTO {
 
 class SupplierService {
     private suppliers: Supplier[] = suppliersData.suppliers;
+    private supplierInfos: SupplierInfo[] = supplierInfosData.supplier_infos;
 
     async getSuppliers(): Promise<Supplier[]> {
         return this.suppliers.filter(supplier => !supplier.is_deleted);
     }
 
-    async getSupplier(id: number): Promise<Supplier> {
-        const supplier = this.suppliers.find(s => s.supplier_id === id && !s.is_deleted);
-        if (!supplier) {
-            throw new Error('Supplier not found');
-        }
-        return supplier;
+    async getSupplierInfo(supplierId: number): Promise<SupplierInfo | undefined> {
+        return this.supplierInfos.find(info => info.supplier_id === supplierId && !info.is_deleted);
+    }
+
+    async getSupplierInfos(supplierId: number): Promise<SupplierInfo[]> {
+        return this.supplierInfos.filter(info => info.supplier_id === supplierId && !info.is_deleted);
     }
 
     async createSupplier(supplier: SupplierCreateDTO): Promise<Supplier> {
@@ -40,10 +48,7 @@ class SupplierService {
         if (index === -1) {
             throw new Error('Supplier not found');
         }
-        this.suppliers[index] = {
-            ...this.suppliers[index],
-            ...supplier
-        };
+        this.suppliers[index] = { ...this.suppliers[index], ...supplier };
         return this.suppliers[index];
     }
 
@@ -65,52 +70,36 @@ class SupplierService {
     }
 
     async importSuppliers(file: File): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const csv = e.target?.result as string;
-                    const lines = csv.split('\n');
-                    const headers = lines[0].split(',');
-                    
-                    // Skip header row and process each line
-                    for (let i = 1; i < lines.length; i++) {
-                        const line = lines[i].trim();
-                        if (!line) continue;
-                        
-                        const values = line.split(',');
-                        const supplier: SupplierCreateDTO = {
-                            name: values[1] || '',
-                            contact_info: values[2] || ''
-                        };
-                        
-                        this.createSupplier(supplier);
-                    }
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            };
-            reader.onerror = () => reject(new Error('Failed to read file'));
-            reader.readAsText(file);
-        });
+        // Mock implementation
+        console.log('Importing suppliers from file:', file.name);
     }
 
     async exportSuppliers(): Promise<Blob> {
-        const headers = ['supplier_id', 'name', 'contact_info'];
-        const csv = [
-            headers.join(','),
-            ...this.suppliers
-                .filter(s => !s.is_deleted)
-                .map(s => [
-                    s.supplier_id,
-                    s.name,
-                    s.contact_info.replace(/\n/g, '; ')
-                ].join(','))
-        ].join('\n');
-        
-        return new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        // Mock implementation
+        const csv = this.suppliers
+            .filter(s => !s.is_deleted)
+            .map(s => `${s.supplier_id},${s.name}`)
+            .join('\n');
+        return new Blob([csv], { type: 'text/csv' });
+    }
+
+    async updateSupplierInfo(info: SupplierInfo): Promise<SupplierInfo> {
+        const index = this.supplierInfos.findIndex(i => i.supplier_info_id === info.supplier_info_id);
+        if (index === -1) {
+            throw new Error('Supplier info not found');
+        }
+        this.supplierInfos[index] = { ...this.supplierInfos[index], ...info };
+        return this.supplierInfos[index];
+    }
+
+    async deleteSupplierInfo(infoId: number): Promise<void> {
+        const index = this.supplierInfos.findIndex(i => i.supplier_info_id === infoId);
+        if (index === -1) {
+            throw new Error('Supplier info not found');
+        }
+        this.supplierInfos[index].is_deleted = true;
     }
 }
 
-export default new SupplierService(); 
+const supplierService = new SupplierService();
+export default supplierService; 

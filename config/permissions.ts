@@ -191,6 +191,36 @@ export const PERMISSIONS: Permission[] = [
         code: 'MACHINE_EXPORT',
         name: 'Export Machines',
         description: 'Can export machines'
+    },
+    {
+        code: 'COMPONENT_VIEW',
+        name: 'View Components',
+        description: 'Can view component list'
+    },
+    {
+        code: 'COMPONENT_CREATE',
+        name: 'Create Component',
+        description: 'Can create new components'
+    },
+    {
+        code: 'COMPONENT_EDIT',
+        name: 'Edit Component',
+        description: 'Can edit existing components'
+    },
+    {
+        code: 'COMPONENT_DELETE',
+        name: 'Delete Component',
+        description: 'Can delete components'
+    },
+    {
+        code: 'COMPONENT_IMPORT',
+        name: 'Import Components',
+        description: 'Can import components'
+    },
+    {
+        code: 'COMPONENT_EXPORT',
+        name: 'Export Components',
+        description: 'Can export components'
     }
 ];
 
@@ -205,7 +235,8 @@ export const ROLES: Role[] = [
             'BRAND_VIEW', 'BRAND_CREATE', 'BRAND_EDIT', 'BRAND_DELETE', 'BRAND_IMPORT', 'BRAND_EXPORT',
             'MODEL_VIEW', 'MODEL_CREATE', 'MODEL_EDIT', 'MODEL_DELETE', 'MODEL_IMPORT', 'MODEL_EXPORT',
             'BATCH_VIEW', 'BATCH_CREATE', 'BATCH_EDIT', 'BATCH_DELETE', 'BATCH_IMPORT', 'BATCH_EXPORT',
-            'MACHINE_VIEW', 'MACHINE_CREATE', 'MACHINE_EDIT', 'MACHINE_DELETE', 'MACHINE_IMPORT', 'MACHINE_EXPORT'
+            'MACHINE_VIEW', 'MACHINE_CREATE', 'MACHINE_EDIT', 'MACHINE_DELETE', 'MACHINE_IMPORT', 'MACHINE_EXPORT',
+            'COMPONENT_VIEW', 'COMPONENT_CREATE', 'COMPONENT_EDIT', 'COMPONENT_DELETE', 'COMPONENT_IMPORT', 'COMPONENT_EXPORT'
         ]
     },
     {
@@ -217,12 +248,13 @@ export const ROLES: Role[] = [
             'BRAND_VIEW', 'BRAND_EDIT', 'BRAND_IMPORT', 'BRAND_EXPORT',
             'MODEL_VIEW', 'MODEL_EDIT', 'MODEL_IMPORT', 'MODEL_EXPORT',
             'BATCH_VIEW', 'BATCH_EDIT', 'BATCH_IMPORT', 'BATCH_EXPORT',
-            'MACHINE_VIEW', 'MACHINE_EDIT', 'MACHINE_IMPORT', 'MACHINE_EXPORT'
+            'MACHINE_VIEW', 'MACHINE_EDIT', 'MACHINE_IMPORT', 'MACHINE_EXPORT',
+            'COMPONENT_VIEW', 'COMPONENT_EDIT', 'COMPONENT_IMPORT', 'COMPONENT_EXPORT'
         ]
     },
     {
         id: 'viewer',
         name: 'Viewer',
-        permissions: ['PRODUCT_VIEW', 'SUPPLIER_VIEW', 'BRAND_VIEW', 'MODEL_VIEW', 'BATCH_VIEW', 'MACHINE_VIEW']
+        permissions: ['PRODUCT_VIEW', 'SUPPLIER_VIEW', 'BRAND_VIEW', 'MODEL_VIEW', 'BATCH_VIEW', 'MACHINE_VIEW', 'COMPONENT_VIEW']
     }
 ]; 

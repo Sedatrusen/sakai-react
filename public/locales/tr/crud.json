@@ -70,7 +70,11 @@
     "suppliers": {
         "title": "Tedarikçiler",
         "name": "Tedarikçi Adı",
-        "contactInfo": "İletişim Bilgisi",
+        "contactInfo": "İletişim Bilgileri",
+        "contactType": "İletişim Tipi",
+        "contactValue": "İletişim Değeri",
+        "noContactInfo": "İletişim bilgisi bulunamadı",
+        "deleteContactInfoConfirm": "Bu iletişim bilgisini silmek istediğinizden emin misiniz?",
         "createSuccess": "Tedarikçi başarıyla oluşturuldu",
         "updateSuccess": "Tedarikçi başarıyla güncellendi",
         "deleteSuccess": "Tedarikçi başarıyla silindi",
@@ -115,5 +119,24 @@
         "deleteMultipleConfirm": "Seçili makineleri silmek istediğinizden emin misiniz?",
         "importSuccess": "Makineler başarıyla içe aktarıldı",
         "exportSuccess": "Makineler başarıyla dışa aktarıldı"
+    },
+    "components": {
+        "title": "Parçalar",
+        "name": "Parça Adı",
+        "description": "Açıklama",
+        "image": "Görsel",
+        "model": "Model",
+        "selectModel": "Model Seçin",
+        "stockCriticalLevel": "Stok Kritik Seviyesi",
+        "stockCriticalLevelType": "Stok Kritik Seviye Tipi",
+        "optimumNumber": "Optimum Sayı",
+        "loadError": "Parçalar yüklenirken hata oluştu",
+        "createSuccess": "Parça başarıyla oluşturuldu",
+        "updateSuccess": "Parça başarıyla güncellendi",
+        "deleteSuccess": "Parça başarıyla silindi",
+        "exportSuccess": "Parçalar başarıyla dışa aktarıldı",
+        "importSuccess": "Parçalar başarıyla içe aktarıldı",
+        "deleteConfirm": "Bu parçayı silmek istediğinizden emin misiniz?",
+        "deleteMultipleConfirm": "Seçili parçaları silmek istediğinizden emin misiniz?"
     }
 } 

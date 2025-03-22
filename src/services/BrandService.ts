@@ -4,7 +4,7 @@ import brandsData from '../data/brands.json';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export interface BrandCreateDTO {
-    name: string;
+    brand_name: string;
 }
 
 export interface BrandUpdateDTO extends BrandCreateDTO {
@@ -29,7 +29,7 @@ class BrandService {
     async createBrand(brand: BrandCreateDTO): Promise<Brand> {
         const newBrand: Brand = {
             brand_id: Math.max(...this.brands.map(b => b.brand_id)) + 1,
-            name: brand.name,
+            brand_name: brand.brand_name,
             is_deleted: false
         };
         this.brands.push(newBrand);
@@ -43,7 +43,7 @@ class BrandService {
         }
         this.brands[index] = {
             ...this.brands[index],
-            name: brand.name
+            brand_name: brand.brand_name
         };
         return this.brands[index];
     }
@@ -80,7 +80,7 @@ class BrandService {
                         
                         const values = line.split(',');
                         const brand: BrandCreateDTO = {
-                            name: values[1]
+                            brand_name: values[1]
                         };
                         
                         this.createBrand(brand);
@@ -98,7 +98,7 @@ class BrandService {
     async exportBrands(): Promise<Blob> {
         const csv = this.brands
             .filter(b => !b.is_deleted)
-            .map(b => `${b.brand_id},${b.name}`)
+            .map(b => `${b.brand_id},${b.brand_name}`)
             .join('\n');
         return new Blob([csv], { type: 'text/csv' });
     }

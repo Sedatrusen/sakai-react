@@ -285,7 +285,7 @@ const Models = () => {
 
     const getBrandName = (brandId: number) => {
         const brand = brands.find(b => b.brand_id === brandId);
-        return brand ? brand.name : '';
+        return brand ? brand.brand_name : '';
     };
 
     const leftToolbarTemplate = () => {

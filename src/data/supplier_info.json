@@ -1,0 +1,39 @@
+{
+    "supplier_infos": [
+        {
+            "supplier_info_id": 1,
+            "supplier_id": 1,
+            "contact_type": "email",
+            "contact": "ahmet@teknikparca.com",
+            "is_deleted": false
+        },
+        {
+            "supplier_info_id": 2,
+            "supplier_id": 2,
+            "contact_type": "email",
+            "contact": "Mehmet Demir - +90 555 234 5678 - mehmet@endustriyel.com",
+            "is_deleted": false
+        },
+        {
+            "supplier_info_id": 3,
+            "supplier_id": 2,
+            "contact_type": "email",
+            "contact": "Ayşe Kaya - +90 555 345 6789 - ayse@makineyedek.com",
+            "is_deleted": false
+        },
+        {
+            "supplier_info_id": 4,
+            "supplier_id": 4,
+            "contact_type": "email",
+            "contact": "Fatma Şahin - +90 555 456 7890 - fatma@otomasyon.com",
+            "is_deleted": false
+        },
+        {
+            "supplier_info_id": 5,
+            "supplier_id": 5,
+            "contact_type": "email",
+            "contact": "Ali Öztürk - +90 555 567 8901 - ali@elektronik.com",
+            "is_deleted": false
+        }
+    ]
+} 

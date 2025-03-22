@@ -1,0 +1,233 @@
+Makine boyutlarý ile ilgili Taha ile konuþulacak
+
+Üretim Hattý kaç aþamadan oluþur? 
+Üretim hattýnda birden fazla aþamada ayný personel çalýþacak mýdýr?
+Üretim Hattýnda yapýlacak iþlemler ve basamaklarý nelerdir. Farklý üretim hattýnda olan kiþiler birbirlerini 
+
+Ürünlerimize ait parçalarý tanýmladýðýmýz tablodur
+Bu tablo makine üretirken (ilerde baþka ürünler de dahil edilerek) kullanýlan parça ürünleri ifade etmektedir.
+Bu aþamada parça malzemelerin stok da ki kritiklik seviyelerine baðlý olarak sistemde uyarý mekanizmasý yapýlmasý gerekmektedir.
+
+
+Parça (Component)
+Alan Adý	Veri Türü	Açýklama
+component_id	INT	Parça ID (Birincil Anahtar)
+name	VARCHAR	Parça Adý
+description	TEXT	Parça Açýklamasý
+component_img		
+model_id	INT	Model ID (Yabancý Anahtar)
+stok_critical_level	INT	Elimizde kalýnca alarm vermesi geren süre 
+stok_crirical_level_type_id	INT	Adet/oran
+Optimum sayi		Elimizde mutlak olmasý gereken adet
+
+Parça (Component_supplier)
+Alan Adý	Veri Türü	Açýklama
+component_supplier_id	INT	TabloID
+component_id	INT	Parça ID (Birincil Anahtar)
+supplier_id	INT	Tedarikçi ID (Yabancý Anahtar)
+component_supply_time	DATETIME	Parça ne kadar zamanda temin ediliyor
+
+Satýn alma planlamasý yaptýðýmýz tedarikçi tablosudur(Ýletiþim bilgilerini doldur)
+Tedarikci
+Alan Adý	Veri Türü	Açýklama
+supplier_id	INT	Tedarikçi ID (Birincil Anahtar)
+name	VARCHAR	Tedarikçi Adý
+Tedarikci Bilgileri
+Alan Adý	Veri Türü	Açýklama
+Supplier_info	INT	Birincil Anahtar
+supplier_id	INT	Tedarikçi ID (Birincil Anahtar)
+Ýletiþim	VARCHAR	Tedarikçi Adý
+
+Ürünlere ait marka bilgilerini tutar
+Marka
+Alan Adý	Veri Türü	Açýklama
+brand_id	INT	Marka ID (Birincil Anahtar)
+brand_name	VARCHAR	Marka Adý
+		
+
+Ürünlere ait model bilgilerini tutar marka tablosu 
+Model
+Alan Adý	Veri Türü	Açýklama
+model_id	INT	Model ID (Birincil Anahtar)
+marka_id	INT	Marka ID (Yabancý Anahtar)
+model_name	VARCHAR	Model Adý
+		
+
+Ürünlere ait parti bilgilerinin tutulduðu tablodur. Senaryoya göre her partide tek ürün tipi olmalýdýr. Fakat partilerde farklý ürün tipleri olmasý durumunda tablo bölünmeli Parti ve Parti Ürünleri adlý iki tablo oluþturulmalýdýr. Ayrýca partide aldýðýmýz birim fiyatýda karþýlaþtýrarak analiz edebiliriz.
+Depo konumlarý tutlak isteniyor fakat depo konumlarý farklý il ilçe olabilirmi
+Ayrýca ayný parti ürünleri farklý depolara bölünebilir mi?
+Ayný parti içerisinde farklý ürün tipleri bulunabilir mi?
+Partilerde alýnan ürünlerin farklý lokasyonlardaki depolarda tutulma durumu mevcut
+Lokasyon bazýnda ürün sayýsý belirlenecek (Yeni tablo parti içerisindeki ürün adý \adedi \seri nosu eklenecek\il\ilçe vs bilgisi olacak)
+Ürünler parti bazýnda çoðalacak þekilde tanýmlama düzenlenecektir
+Ürün ve tedarik konusunda belli bir sayýda ürün sipariþi geçilmesi için alarm mekanizmasý tutulmalý
+Ortalama ürün maliyeti hesabý ve analizler için görüþülecek
+
+Parti
+Alan Adý	Veri Türü	Açýklama
+batch_id	INT	Parti ID (Birincil Anahtar)
+Supplier_Id	INT	Tedarik edilek satýcý Id
+batch_number	VARCHAR	Parti Numarasý
+batch_QR	BINARY	QR resim saklanýr
+total_quantity	INT	Toplam Miktar
+price	DECIMAL(10,2)		Toplam Parti Fiyatý
+currency_id	INT	Para Birimini Tutar
+current_rate	DECIMAL(10,2)	Döviz bazlý ödeme günü kur bilgisini tutar
+
+
+Parti_Parça
+Alan Adý	Veri Türü	Açýklama
+batch_component_id	INT	Parti ve parça eþleþmesi ana Id
+QR _Code		
+batch_id	INT	Parti ID (Yabancý Anahtar)
+component_id	INT	Parça ID (Yabancý Anahtar)
+expiration_date	DATE	Garanti Süresi
+total_quantity	INT	Toplam Miktar
+used_quantity	INT	Kullanýlan Miktar
+remaining_quantity	INT	Kalan Miktar
+price	DECIMAL(10,2)		Parti içerisindeki parça Fiyatý
+Location_id	INT	Parti parça bulunduðu yer
+Satate_id	INT	Parça teslim iade vs durumlarýný aldýðýmýz alan
+
+Lokasyon
+Alan Adý	Veri Türü	Açýklama
+location_id	INT	Parti ve parça eþleþmesi
+		
+		
+
+
+Stok iþlemlerinin geçmiþlerini takip edilmesi amacýyla tutulan tablodur. Parti bazlý olarak ürünlerin kullaným geçmiþlerini görürüz. Bu tabloda toplu kullanýmý deðil anlýk hareketleri tutarýz. Miktar toplamý her zaman parti deki ürünün kullaným miktarýna eþit olmalýdýr.
+Partilere karakod koyarsak hangi partiden ürün aldýðýmýz kolaylaþýr ve takibi stok düþümü takibi yapýlýr. 
+Stok Hareketleri
+Alan Adý	Veri Türü	Açýklama
+movement_id	INT	Hareket ID (Birincil Anahtar)
+Batch_component_id	INT	Parti parça ID (Yabancý Anahtar)
+Serial number	VARCHAR	Kullanýlan parça seri numarasý
+movement_type	ENUM('Kullaným', 'Tüketim', 'Tedarik', 'Hurda')	Hareket Türü
+quantity	INT	Miktar
+movement_date	DATE	Hareket Tarihi
+description	TEXT	Hareket Açýklamasý
+		
+
+Üretilen Makineleri tuttuðumuz tablodur. Machine_code (Kendimizin belirleyeceði bir kod)  ile makineleri iþaretleyerek birbirinden ayýrabileceðimiz bir numara oluþturmuþ olacaðýz.
+Yarý mamul dediðimiz bir ürün sýnýfý mevcut (iki yarý mamul dediðimiz bir ürün mevcut ve bu ürünler toplanarak ana ürün üretiliyor) bunun için bir  yapý planlanacak
+Montaj kýsýmlarý için montaj dokümaný\ kýlavuzu çýkacak (Parça detaylarý ve içerisinde yarý mamul bazýnda ve ana ürün bazýnda kýlavuzlar mevcut olacak) bu kýlavuzlar bazýnda hareket edilecek
+Klavuzlar için oluþturulan tanýmlama tablolarý(Üretim süreci ara üretim mamülleri için kalvuzlar kullanýlan ürünler ve adetleri bu tablolarda yer alýr versiyonlama lar içinde yeni makine üretilmesi içinde bu tablolar kullanýlacak her üretilen ürün üretim aþamasýna çýkmadan tanýmlamalarý bu tablolara eklenmesi gerekmektedir.)
+Kapella Model
+Alan Adý	Veri Türü	Açýklama
+model_id	INT	modelId ID (Birincil Anahtar)
+model_name	VARCHAR	Ürünlerimizin ismi(sadece cam alan makine, ara ürünlerin adlarý)
+Model_info		Klavuz Tutulacak
+
+Kapella Stage
+Alan Adý	Veri Türü	Açýklama
+stage_id	INT	Stage ID (Birincil Anahtar)
+Stage_name		Aþama isimleri(a Parçasý üretilirken ne yapýlýr)
+model_Id	INT	oluþturulan Model (ana Model)
+Stage_info		Stage klavuzu
+		
+
+Kapella Stage_component
+Alan Adý	Veri Türü	Açýklama
+stage_id	INT	Stage ID (Birincil Anahtar)
+Component_id		Üretim kýsmýnda kullnaýlan parçalarý turar
+Adet		Kaç tane üretileceði yazýlýr
+
+Kapella Stage_model(alt modeller tanýmlanýr)
+Alan Adý	Veri Türü	Açýklama
+Stage_model_id	INT	Stage ID (Birincil Anahtar)
+Stage_Id	INT	Hangi aþamada
+model_id	INT	Hangi model üretilir
+		
+
+
+
+
+
+
+
+
+
+Kapella Product 
+Alan Adý	Veri Türü	Açýklama
+product_id	INT	Makine ID (Birincil Anahtar)
+Product_type_id	INT	Üretilen ürün tipi(ana-Ara mamül)
+Kapella_Model_Id	INT	Oluþan model nedir onu biliriz
+Product_serial_number	VARCHAR	Makine Kodu
+QR_code		Seri noyu içeren QR oluþturulaacak
+description	TEXT	Makine Açýklamasý
+Stage_id	INT	Stage Tablosu Id si
+		
+Ýkinci domainde lokasyonlar vs devreye girecek
+
+Kapella Product_subProduct
+Alan Adý	Veri Türü	Açýklama
+Product_subProduct_id	INT	Birincil Anahtar
+product_id	INT	Ürün ID (Birincil Anahtar)
+subproduct_id	INT	Ürün ID (ara mamül)
+Stage_Id	INT	Hangi aþama için
+
+Anlýk olarak makine içerisinde kullanýlan ürün geçmiþini veren tablodur.
+Ekrandan adet alaný olacak ve tabloya kaydedilmeyecek seri no girmediyse adet 5 ise tabloya 5 kayýt atýlacak, seri no varsa adet her zaman 1 olmalý ve deðiþtirememeli tabloya tek kayýt atýlacak
+Makinede Kullanýlan Component
+Product_component_id	INT	Ürün Parça ID (Birincil Anahtar)
+product_id	INT	Makine ID (Yabancý Anahtar)
+component_serial_number	VARCHAR	Parçanýn seri numarasý varsa
+Component_batch_id	INT	Parti Parça ID (Yabancý Anahtar)
+updated_at	TIMESTAMP	Güncelleme Zamaný
+Stage_id	INT	Hangi aþama için
+
+
+
+
+
+
+Makinede bulunan ve daha önce makinede kullanýlan ve çýkarýlan ürünleri gösteren tablo olarak tasarlanmýþtýr. Böylece makine içerisinde kullanýlan sensörleri ve kullaným geçmiþlerini takip edebiliriz.
+Makine Ürün Kullaným Geçmiþi
+Alan Adý	Veri Türü	Açýklama
+movement_id	INT	Hareket ID (Birincil Anahtar)
+Bath_component_id	INT	Ürün ID (Yabancý Anahtar)
+movement_type_id	INT	Hareket Türü Enumdan gelecek
+product_id	INT	Makine ID (Yabancý Anahtar)
+IsDeleted		
+
+Tüm tablolarda ortak olacak þekilde ayrýca tablolarda hard delete iþlemi yerine soft delete kullanýlmasý daha güvenilir olacaktýr bulunan tüm tablolara IsDeleted kolonu eklenerek kaydýn son durumunu takip edebiliriz.(ELK kullnaýlacaðý için sonradan olacak þekilde düzenlenebilir)
+Base
+Alan Adý	Alan Adý	Alan Adý
+id	INT	Birincil Anahtar
+record_id	INT	Kaydýn ID’si (Ýlgili Tabloya Yabancý Anahtar)
+table_name_id	int	Kaydýn ait olduðu tablo 
+createdIp		
+created_at	TIMESTAMP	Eklenme Tarihi
+updated_at	TIMESTAMP	Güncellenme Tarihi
+created_by	INT	Kaydý Ekleyen Kullanýcý ID'si
+updated_by	INT	Kaydý Güncelleyen Kullanýcý ID'si
+
+Tablolar Tablosu
+Alan Adý	Alan Adý	Alan Adý
+id	INT	Birincil Anahtar
+table_name	INT	Oluþturulan Tablo Adlarý
+
+
+Sistem içerisinde tedarikçi ve temin edilen marka model bilgilerini tutulacaðý bir tabloda oluþturmak iþ takibini kolaylaþtýrýr. Tedarikçinin saðladýðý ürünler bazýnda bilgi birimini oluþturacaðý bir veri toplamýþ olacaðýz. Bu ürünler bazýnda favori ürünlerimizi belirterek kullaným durumlarýný ve ömürlerini ve tedarikci garanti sürelerini yine bu tabloda tutabiliriz.
+
+
+
+
+
+
+
+Sabit durumlar iki tabloda tutulur.
+
+Nesne Tablosu
+Alan Adý	Alan Adý	Alan Adý
+id	INT	Birincil Anahtar
+object_name	INT	Oluþturulan Tablo Adlarý
+
+
+
+Yardýmcý Nesne Tablosu
+Alan Adý	Alan Adý	Alan Adý
+id	INT	Birincil Anahtar
+objectId	Ýnt	Üst tablo ile baðlantýlý
+subObject_name	INT	Oluþturulan Tablo Adlarý

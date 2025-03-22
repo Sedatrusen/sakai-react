@@ -1,13 +1,12 @@
 export interface Batch {
     batch_id: number;
-    product_id: number;
+    supplier_id: number;
     batch_number: string;
-    manufacture_date: Date;
-    expiration_date: Date;
+    batch_qr: Buffer;
     total_quantity: number;
-    used_quantity: number;
-    remaining_quantity: number;
     price: number;
+    currency_id: number;
+    current_rate: number;
     is_deleted: boolean;
 }
 
@@ -17,38 +16,35 @@ export interface BatchUpdateDTO extends Batch {}
 const dummyBatches: Batch[] = [
     {
         batch_id: 1,
-        product_id: 1,
-        batch_number: 'B001',
-        manufacture_date: new Date('2024-01-01'),
-        expiration_date: new Date('2025-01-01'),
-        total_quantity: 1000,
-        used_quantity: 200,
-        remaining_quantity: 800,
-        price: 150.50,
+        supplier_id: 1,
+        batch_number: 'BATCH-001',
+        batch_qr: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='),
+        total_quantity: 100,
+        price: 1500.50,
+        currency_id: 1,
+        current_rate: 31.25,
         is_deleted: false
     },
     {
         batch_id: 2,
-        product_id: 2,
-        batch_number: 'B002',
-        manufacture_date: new Date('2024-02-01'),
-        expiration_date: new Date('2025-02-01'),
-        total_quantity: 500,
-        used_quantity: 100,
-        remaining_quantity: 400,
-        price: 200.75,
+        supplier_id: 2,
+        batch_number: 'BATCH-002',
+        batch_qr: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='),
+        total_quantity: 200,
+        price: 2500.75,
+        currency_id: 2,
+        current_rate: 1.05,
         is_deleted: false
     },
     {
         batch_id: 3,
-        product_id: 1,
-        batch_number: 'B003',
-        manufacture_date: new Date('2024-03-01'),
-        expiration_date: new Date('2025-03-01'),
-        total_quantity: 750,
-        used_quantity: 50,
-        remaining_quantity: 700,
-        price: 175.25,
+        supplier_id: 3,
+        batch_number: 'BATCH-003',
+        batch_qr: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='),
+        total_quantity: 150,
+        price: 1800.25,
+        currency_id: 1,
+        current_rate: 31.45,
         is_deleted: false
     }
 ];
@@ -137,10 +133,10 @@ class BatchService {
     exportBatches(): Promise<Blob> {
         return new Promise((resolve) => {
             setTimeout(() => {
-                const csvContent = 'batch_id,product_id,batch_number,manufacture_date,expiration_date,total_quantity,used_quantity,remaining_quantity,price\n' +
+                const csvContent = 'batch_id,supplier_id,batch_number,total_quantity,price,currency_id,current_rate\n' +
                     dummyBatches
                         .filter(b => !b.is_deleted)
-                        .map(b => `${b.batch_id},${b.product_id},${b.batch_number},${b.manufacture_date.toISOString()},${b.expiration_date.toISOString()},${b.total_quantity},${b.used_quantity},${b.remaining_quantity},${b.price}`)
+                        .map(b => `${b.batch_id},${b.supplier_id},${b.batch_number},${b.total_quantity},${b.price},${b.currency_id},${b.current_rate}`)
                         .join('\n');
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 resolve(blob);

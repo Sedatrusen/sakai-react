@@ -17,7 +17,7 @@ import { Brand } from '../../../../../src/types/brand';
 
 const Brands = () => {
     let emptyBrand: BrandCreateDTO = {
-        name: ''
+        brand_name: ''
     };
 
     const [brands, setBrands] = useState<Brand[]>([]);
@@ -100,7 +100,7 @@ const Brands = () => {
     const saveBrand = async () => {
         setSubmitted(true);
 
-        if (brand.name.trim()) {
+        if (brand.brand_name.trim()) {
             try {
                 setLoading(true);
                 if ((brand as any).brand_id) {
@@ -247,7 +247,7 @@ const Brands = () => {
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: keyof Brand) => {
         const val = (e.target && e.target.value) || '';
         let _brand = { ...brand };
-        if (name === 'name') {
+        if (name === 'brand_name') {
             _brand[name] = val;
         }
         setBrand(_brand);
@@ -362,15 +362,15 @@ const Brands = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
                         <Column field="brand_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
-                        <Column field="name" header={t('crud:brands.name')} sortable style={{ minWidth: '12rem' }}></Column>
+                        <Column field="brand_name" header={t('crud:brands.name')} sortable style={{ minWidth: '12rem' }}></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
 
                     <Dialog visible={brandDialog} style={{ width: '450px' }} header={(brand as any).brand_id ? t('crud:common.edit') : t('crud:common.new')} modal className="p-fluid" footer={brandDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="name">{t('crud:brands.name')}</label>
-                            <InputText id="name" value={brand.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !brand.name })} />
-                            {submitted && !brand.name && <small className="p-invalid">{t('crud:common.required')}</small>}
+                            <label htmlFor="brand_name">{t('crud:brands.name')}</label>
+                            <InputText id="brand_name" value={brand.brand_name} onChange={(e) => onInputChange(e, 'brand_name')} required autoFocus className={classNames({ 'p-invalid': submitted && !brand.brand_name })} />
+                            {submitted && !brand.brand_name && <small className="p-invalid">{t('crud:common.required')}</small>}
                         </div>
                     </Dialog>
 
