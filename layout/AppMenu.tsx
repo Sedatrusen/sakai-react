@@ -6,84 +6,124 @@ import { LayoutContext } from './context/layoutcontext';
 import { MenuProvider } from './context/menucontext';
 import Link from 'next/link';
 import { AppMenuItem } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 const AppMenu = () => {
     const { layoutConfig } = useContext(LayoutContext);
+    const { t } = useTranslation();
 
     const model: AppMenuItem[] = [
         {
-            label: 'Home',
-            items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+            label: t('menu:home'),
+            items: [{ label: t('menu:dashboard'), icon: 'pi pi-fw pi-home', to: '/' }]
         },    
         {
-            label: 'Pages',
+            label: t('menu:pages'),
             icon: 'pi pi-fw pi-briefcase',
             to: '/pages',
             items: [
                 {
-                    label: 'Auth',
+                    label: t('menu:auth'),
                     icon: 'pi pi-fw pi-user',
                     items: [
                         {
-                            label: 'Login',
+                            label: t('menu:login'),
                             icon: 'pi pi-fw pi-sign-in',
                             to: '/auth/login'
                         },
                         {
-                            label: 'Error',
+                            label: t('menu:error'),
                             icon: 'pi pi-fw pi-times-circle',
                             to: '/auth/error'
                         },
                         {
-                            label: 'Access Denied',
+                            label: t('menu:access_denied'),
                             icon: 'pi pi-fw pi-lock',
                             to: '/auth/access'
                         }
                     ]
                 },
                 {
-                    label: 'Crud',
+                    label: t('menu:crud'),
                     icon: 'pi pi-fw pi-pencil',
                     items: [
                         {
-                            label: 'Products',
+                            label: t('crud:products.title'),
                             icon: 'pi pi-fw pi-box',
                             to: '/pages/crud/products'
                         },
                         {
-                            label: 'Suppliers',
+                            label: t('crud:suppliers.title'),
                             icon: 'pi pi-fw pi-truck',
                             to: '/pages/crud/suppliers'
                         },
                         {
-                            label: 'Brands',
+                            label: t('crud:brands.title'),
                             icon: 'pi pi-fw pi-tag',
                             to: '/pages/crud/brands'
                         },
                         {
-                            label: 'Models',
+                            label: t('crud:models.title'),
                             icon: 'pi pi-fw pi-list',
                             to: '/pages/crud/models'
                         },
                         {
-                            label: 'Batches',
+                            label: t('crud:batches.title'),
                             icon: 'pi pi-fw pi-layer',
                             to: '/pages/crud/batches'
                         },
                         {
-                            label: 'Machines',
+                            label: t('crud:machines.title'),
                             icon: 'pi pi-fw pi-cog',
                             to: '/pages/crud/machines'
                         },
                         {
-                            label: 'Components',
+                            label: t('crud:components.title'),
                             icon: 'pi pi-fw pi-th-large',
                             to: '/pages/crud/components'
+                        },
+                        {
+                            label: t('crud:batch_components.title'),
+                            icon: 'pi pi-fw pi-link',
+                            to: '/pages/crud/batch_components'
+                        },
+                        {
+                            label: t('crud:locations.title'),
+                            icon: 'pi pi-fw pi-map-marker',
+                            to: '/pages/crud/locations'
+                        },
+                        {
+                            label: t('crud:movements.title'),
+                            icon: 'pi pi-fw pi-exchange',
+                            to: '/pages/crud/movements'
+                        },
+                        {
+                            label: t('crud:generated_models.title'),
+                            icon: 'pi pi-fw pi-cube',
+                            to: '/pages/crud/generated_models'
+                        },
+                        {
+                            label: t('crud:stages.title'),
+                            icon: 'pi pi-fw pi-list',
+                            to: '/pages/crud/stages',
+                            permission: 'STAGE_VIEW'
+                        },
+                        {
+                            label: t('crud:stage_components.title'),
+                            icon: 'pi pi-fw pi-list',
+                            to: '/pages/crud/stage-components',
+                            permission: 'STAGE_COMPONENT_VIEW'
+                        },
+                        {
+                            label: t('crud:stage_generated_models.title'),
+                            icon: 'pi pi-fw pi-cube',
+                            to: '/pages/crud/stage-generated-models',
+                            permission: 'STAGE_GENERATED_MODEL_VIEW'
                         }
                     ]
                 },
                 {
-                    label: 'Users',
+                    label: t('menu:users'),
                     icon: 'pi pi-fw pi-user',
                     to: '/users'
                 }

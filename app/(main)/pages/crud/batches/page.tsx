@@ -26,7 +26,10 @@ const Batches = () => {
         total_quantity: 0,
         price: 0,
         currency_id: 1,
-        current_rate: 0
+        current_rate: 0,
+        status: 'Active',
+        location: '',
+        created_at: new Date()
     };
 
     const [batches, setBatches] = useState<Batch[]>([]);
@@ -375,12 +378,19 @@ const Batches = () => {
                         loading={loading}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} className="text-center"></Column>
-                        <Column field="batch_id" header="ID" sortable style={{ minWidth: '8rem' }}></Column>
+                        <Column field="batch_id" header={t('crud:batches.id')} sortable style={{ minWidth: '8rem' }}></Column>
                         <Column field="supplier_id" header={t('crud:batches.supplier')} sortable style={{ minWidth: '10rem' }} body={(rowData) => getSupplierName(rowData.supplier_id)}></Column>
                         <Column field="batch_number" header={t('crud:batches.batchNumber')} sortable style={{ minWidth: '12rem' }}></Column>
                         <Column field="total_quantity" header={t('crud:batches.totalQuantity')} sortable style={{ minWidth: '10rem' }}></Column>
                         <Column field="price" header={t('crud:batches.price')} sortable style={{ minWidth: '8rem' }}></Column>
-                        <Column field="currency_id" header={t('crud:batches.currency')} sortable style={{ minWidth: '8rem' }}></Column>
+                        <Column field="currency_id" header={t('crud:batches.currency')} sortable style={{ minWidth: '8rem' }} body={(rowData) => {
+                            switch(rowData.currency_id) {
+                                case 1: return t('crud:batches.currencies.try');
+                                case 2: return t('crud:batches.currencies.usd');
+                                case 3: return t('crud:batches.currencies.eur');
+                                default: return '';
+                            }
+                        }}></Column>
                         <Column field="current_rate" header={t('crud:batches.currentRate')} sortable style={{ minWidth: '8rem' }}></Column>
                         <Column body={actionBodyTemplate} header={t('crud:common.actions')}></Column>
                     </DataTable>
@@ -420,9 +430,9 @@ const Batches = () => {
                                 value={batch.currency_id}
                                 onChange={(e) => onInputNumberChange(e, 'currency_id')}
                                 options={[
-                                    { label: 'TRY', value: 1 },
-                                    { label: 'USD', value: 2 },
-                                    { label: 'EUR', value: 3 }
+                                    { label: t('crud:batches.currencies.try'), value: 1 },
+                                    { label: t('crud:batches.currencies.usd'), value: 2 },
+                                    { label: t('crud:batches.currencies.eur'), value: 3 }
                                 ]}
                                 placeholder={t('crud:batches.selectCurrency')}
                             />

@@ -8,4 +8,5 @@ export interface Component {
     stok_crirical_level_type_id: number;
     optimum_sayi: number;
     is_deleted: boolean;
+    unit?: string;
 } 

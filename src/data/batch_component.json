@@ -1,0 +1,121 @@
+{
+    "batch_components": [
+        {
+            "batch_component_id": 1,
+            "qr_code": "BC001-QR",
+            "batch_id": 1,
+            "component_id": 1,
+            "expiration_date": "2025-03-23",
+            "total_quantity": 50,
+            "used_quantity": 10,
+            "remaining_quantity": 40,
+            "price": 750.25,
+            "location_id": 1,
+            "state_id": 1,
+            "is_deleted": false,
+            "batch": {
+                "batch_id": 1,
+                "supplier_id": 1,
+                "batch_number": "BATCH-001",
+                "batch_qr": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                "total_quantity": 100,
+                "price": 1500.50,
+                "currency_id": 1,
+                "current_rate": 31.25,
+                "is_deleted": false,
+                "created_at": "2024-01-01",
+                "status": "Active",
+                "location": "Warehouse A"
+            },
+            "component": {
+                "component_id": 1,
+                "name": "Motor",
+                "description": "Ana motor parçası",
+                "component_img": "/images/components/motor.jpg",
+                "model_id": 1,
+                "stok_critical_level": 5,
+                "stok_crirical_level_type_id": 1,
+                "optimum_sayi": 10,
+                "is_deleted": false
+            }
+        },
+        {
+            "batch_component_id": 2,
+            "qr_code": "BC002-QR",
+            "batch_id": 2,
+            "component_id": 2,
+            "expiration_date": "2025-04-15",
+            "total_quantity": 75,
+            "used_quantity": 20,
+            "remaining_quantity": 55,
+            "price": 1250.75,
+            "location_id": 2,
+            "state_id": 1,
+            "is_deleted": false,
+            "batch": {
+                "batch_id": 2,
+                "supplier_id": 2,
+                "batch_number": "BATCH-002",
+                "batch_qr": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                "total_quantity": 200,
+                "price": 2500.75,
+                "currency_id": 2,
+                "current_rate": 1.05,
+                "is_deleted": false,
+                "created_at": "2024-01-15",
+                "status": "Active",
+                "location": "Warehouse B"
+            },
+            "component": {
+                "component_id": 2,
+                "name": "Fren Sistemi",
+                "description": "Fren sistemi parçaları",
+                "component_img": "/images/components/fren.jpg",
+                "model_id": 1,
+                "stok_critical_level": 3,
+                "stok_crirical_level_type_id": 1,
+                "optimum_sayi": 8,
+                "is_deleted": false
+            }
+        },
+        {
+            "batch_component_id": 3,
+            "qr_code": "BC003-QR",
+            "batch_id": 3,
+            "component_id": 3,
+            "expiration_date": "2025-05-01",
+            "total_quantity": 100,
+            "used_quantity": 15,
+            "remaining_quantity": 85,
+            "price": 900.50,
+            "location_id": 3,
+            "state_id": 1,
+            "is_deleted": false,
+            "batch": {
+                "batch_id": 3,
+                "supplier_id": 3,
+                "batch_number": "BATCH-003",
+                "batch_qr": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                "total_quantity": 150,
+                "price": 1800.25,
+                "currency_id": 1,
+                "current_rate": 31.45,
+                "is_deleted": false,
+                "created_at": "2024-02-01",
+                "status": "Active",
+                "location": "Warehouse C"
+            },
+            "component": {
+                "component_id": 3,
+                "name": "Yağ Filtresi",
+                "description": "Motor yağ filtresi",
+                "component_img": "/images/components/yag-filtresi.jpg",
+                "model_id": 2,
+                "stok_critical_level": 10,
+                "stok_crirical_level_type_id": 1,
+                "optimum_sayi": 20,
+                "is_deleted": false
+            }
+        }
+    ]
+} 

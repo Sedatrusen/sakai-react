@@ -221,6 +221,186 @@ export const PERMISSIONS: Permission[] = [
         code: 'COMPONENT_EXPORT',
         name: 'Export Components',
         description: 'Can export components'
+    },
+    {
+        code: 'BATCH_COMPONENT_VIEW',
+        name: 'View Batch Components',
+        description: 'Can view batch component list'
+    },
+    {
+        code: 'BATCH_COMPONENT_CREATE',
+        name: 'Create Batch Component',
+        description: 'Can create new batch components'
+    },
+    {
+        code: 'BATCH_COMPONENT_EDIT',
+        name: 'Edit Batch Component',
+        description: 'Can edit existing batch components'
+    },
+    {
+        code: 'BATCH_COMPONENT_DELETE',
+        name: 'Delete Batch Component',
+        description: 'Can delete batch components'
+    },
+    {
+        code: 'BATCH_COMPONENT_IMPORT',
+        name: 'Import Batch Components',
+        description: 'Can import batch components'
+    },
+    {
+        code: 'BATCH_COMPONENT_EXPORT',
+        name: 'Export Batch Components',
+        description: 'Can export batch components'
+    },
+    {
+        code: 'LOCATION_VIEW',
+        name: 'View Locations',
+        description: 'Can view location list'
+    },
+    {
+        code: 'LOCATION_CREATE',
+        name: 'Create Location',
+        description: 'Can create new locations'
+    },
+    {
+        code: 'LOCATION_EDIT',
+        name: 'Edit Location',
+        description: 'Can edit existing locations'
+    },
+    {
+        code: 'LOCATION_DELETE',
+        name: 'Delete Location',
+        description: 'Can delete locations'
+    },
+    {
+        code: 'LOCATION_IMPORT',
+        name: 'Import Locations',
+        description: 'Can import locations'
+    },
+    {
+        code: 'LOCATION_EXPORT',
+        name: 'Export Locations',
+        description: 'Can export locations'
+    },
+    {
+        code: 'STOCK_MOVEMENT_VIEW',
+        name: 'View Stock Movements',
+        description: 'Can view stock movement list'
+    },
+    {
+        code: 'STOCK_MOVEMENT_CREATE',
+        name: 'Create Stock Movement',
+        description: 'Can create new stock movements'
+    },
+    {
+        code: 'STOCK_MOVEMENT_EDIT',
+        name: 'Edit Stock Movement',
+        description: 'Can edit existing stock movements'
+    },
+    {
+        code: 'STOCK_MOVEMENT_DELETE',
+        name: 'Delete Stock Movement',
+        description: 'Can delete stock movements'
+    },
+    {
+        code: 'STOCK_MOVEMENT_IMPORT',
+        name: 'Import Stock Movements',
+        description: 'Can import stock movements'
+    },
+    {
+        code: 'STOCK_MOVEMENT_EXPORT',
+        name: 'Export Stock Movements',
+        description: 'Can export stock movements'
+    },
+    {
+        code: 'STAGE_VIEW',
+        name: 'View Stages',
+        description: 'Can view stage list'
+    },
+    {
+        code: 'STAGE_CREATE',
+        name: 'Create Stage',
+        description: 'Can create new stages'
+    },
+    {
+        code: 'STAGE_EDIT',
+        name: 'Edit Stage',
+        description: 'Can edit existing stages'
+    },
+    {
+        code: 'STAGE_DELETE',
+        name: 'Delete Stage',
+        description: 'Can delete stages'
+    },
+    {
+        code: 'STAGE_IMPORT',
+        name: 'Import Stages',
+        description: 'Can import stages'
+    },
+    {
+        code: 'STAGE_EXPORT',
+        name: 'Export Stages',
+        description: 'Can export stages'
+    },
+    {
+        code: 'STAGE_COMPONENT_VIEW',
+        name: 'View Stage Components',
+        description: 'Can view stage component list'
+    },
+    {
+        code: 'STAGE_COMPONENT_CREATE',
+        name: 'Create Stage Component',
+        description: 'Can create new stage components'
+    },
+    {
+        code: 'STAGE_COMPONENT_EDIT',
+        name: 'Edit Stage Component',
+        description: 'Can edit existing stage components'
+    },
+    {
+        code: 'STAGE_COMPONENT_DELETE',
+        name: 'Delete Stage Component',
+        description: 'Can delete stage components'
+    },
+    {
+        code: 'STAGE_COMPONENT_IMPORT',
+        name: 'Import Stage Components',
+        description: 'Can import stage components'
+    },
+    {
+        code: 'STAGE_COMPONENT_EXPORT',
+        name: 'Export Stage Components',
+        description: 'Can export stage components'
+    },
+    {
+        code: 'STAGE_GENERATED_MODEL_VIEW',
+        name: 'View Stage Generated Models',
+        description: 'Can view stage generated model list'
+    },
+    {
+        code: 'STAGE_GENERATED_MODEL_CREATE',
+        name: 'Create Stage Generated Model',
+        description: 'Can create new stage generated models'
+    },
+    {
+        code: 'STAGE_GENERATED_MODEL_EDIT',
+        name: 'Edit Stage Generated Model',
+        description: 'Can edit existing stage generated models'
+    },
+    {
+        code: 'STAGE_GENERATED_MODEL_DELETE',
+        name: 'Delete Stage Generated Model',
+        description: 'Can delete stage generated models'
+    },
+    {
+        code: 'STAGE_GENERATED_MODEL_IMPORT',
+        name: 'Import Stage Generated Models',
+        description: 'Can import stage generated models'
+    },
+    {
+        code: 'STAGE_GENERATED_MODEL_EXPORT',
+        name: 'Export Stage Generated Models',
+        description: 'Can export stage generated models'
     }
 ];
 
@@ -236,7 +416,13 @@ export const ROLES: Role[] = [
             'MODEL_VIEW', 'MODEL_CREATE', 'MODEL_EDIT', 'MODEL_DELETE', 'MODEL_IMPORT', 'MODEL_EXPORT',
             'BATCH_VIEW', 'BATCH_CREATE', 'BATCH_EDIT', 'BATCH_DELETE', 'BATCH_IMPORT', 'BATCH_EXPORT',
             'MACHINE_VIEW', 'MACHINE_CREATE', 'MACHINE_EDIT', 'MACHINE_DELETE', 'MACHINE_IMPORT', 'MACHINE_EXPORT',
-            'COMPONENT_VIEW', 'COMPONENT_CREATE', 'COMPONENT_EDIT', 'COMPONENT_DELETE', 'COMPONENT_IMPORT', 'COMPONENT_EXPORT'
+            'COMPONENT_VIEW', 'COMPONENT_CREATE', 'COMPONENT_EDIT', 'COMPONENT_DELETE', 'COMPONENT_IMPORT', 'COMPONENT_EXPORT',
+            'BATCH_COMPONENT_VIEW', 'BATCH_COMPONENT_CREATE', 'BATCH_COMPONENT_EDIT', 'BATCH_COMPONENT_DELETE', 'BATCH_COMPONENT_IMPORT', 'BATCH_COMPONENT_EXPORT',
+            'LOCATION_VIEW', 'LOCATION_CREATE', 'LOCATION_EDIT', 'LOCATION_DELETE', 'LOCATION_IMPORT', 'LOCATION_EXPORT',
+            'STOCK_MOVEMENT_VIEW', 'STOCK_MOVEMENT_CREATE', 'STOCK_MOVEMENT_EDIT', 'STOCK_MOVEMENT_DELETE', 'STOCK_MOVEMENT_IMPORT', 'STOCK_MOVEMENT_EXPORT',
+            'STAGE_VIEW', 'STAGE_CREATE', 'STAGE_EDIT', 'STAGE_DELETE', 'STAGE_IMPORT', 'STAGE_EXPORT',
+            'STAGE_COMPONENT_VIEW', 'STAGE_COMPONENT_CREATE', 'STAGE_COMPONENT_EDIT', 'STAGE_COMPONENT_DELETE', 'STAGE_COMPONENT_IMPORT', 'STAGE_COMPONENT_EXPORT',
+            'STAGE_GENERATED_MODEL_VIEW', 'STAGE_GENERATED_MODEL_CREATE', 'STAGE_GENERATED_MODEL_EDIT', 'STAGE_GENERATED_MODEL_DELETE', 'STAGE_GENERATED_MODEL_IMPORT', 'STAGE_GENERATED_MODEL_EXPORT'
         ]
     },
     {
@@ -249,12 +435,23 @@ export const ROLES: Role[] = [
             'MODEL_VIEW', 'MODEL_EDIT', 'MODEL_IMPORT', 'MODEL_EXPORT',
             'BATCH_VIEW', 'BATCH_EDIT', 'BATCH_IMPORT', 'BATCH_EXPORT',
             'MACHINE_VIEW', 'MACHINE_EDIT', 'MACHINE_IMPORT', 'MACHINE_EXPORT',
-            'COMPONENT_VIEW', 'COMPONENT_EDIT', 'COMPONENT_IMPORT', 'COMPONENT_EXPORT'
+            'COMPONENT_VIEW', 'COMPONENT_EDIT', 'COMPONENT_IMPORT', 'COMPONENT_EXPORT',
+            'BATCH_COMPONENT_VIEW', 'BATCH_COMPONENT_EDIT', 'BATCH_COMPONENT_IMPORT', 'BATCH_COMPONENT_EXPORT',
+            'LOCATION_VIEW', 'LOCATION_EDIT', 'LOCATION_IMPORT', 'LOCATION_EXPORT',
+            'STOCK_MOVEMENT_VIEW', 'STOCK_MOVEMENT_CREATE', 'STOCK_MOVEMENT_EDIT', 'STOCK_MOVEMENT_IMPORT', 'STOCK_MOVEMENT_EXPORT',
+            'STAGE_VIEW', 'STAGE_EDIT', 'STAGE_IMPORT', 'STAGE_EXPORT',
+            'STAGE_COMPONENT_VIEW', 'STAGE_COMPONENT_EDIT', 'STAGE_COMPONENT_IMPORT', 'STAGE_COMPONENT_EXPORT',
+            'STAGE_GENERATED_MODEL_VIEW', 'STAGE_GENERATED_MODEL_CREATE', 'STAGE_GENERATED_MODEL_EDIT', 'STAGE_GENERATED_MODEL_IMPORT', 'STAGE_GENERATED_MODEL_EXPORT'
         ]
     },
     {
         id: 'viewer',
         name: 'Viewer',
-        permissions: ['PRODUCT_VIEW', 'SUPPLIER_VIEW', 'BRAND_VIEW', 'MODEL_VIEW', 'BATCH_VIEW', 'MACHINE_VIEW', 'COMPONENT_VIEW']
+        permissions: [
+            'PRODUCT_VIEW', 'SUPPLIER_VIEW', 'BRAND_VIEW', 'MODEL_VIEW', 
+            'BATCH_VIEW', 'MACHINE_VIEW', 'COMPONENT_VIEW', 
+            'BATCH_COMPONENT_VIEW', 'LOCATION_VIEW', 'STOCK_MOVEMENT_VIEW',
+            'STAGE_VIEW', 'STAGE_COMPONENT_VIEW', 'STAGE_GENERATED_MODEL_VIEW'
+        ]
     }
 ]; 

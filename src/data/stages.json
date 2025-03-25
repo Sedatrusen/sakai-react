@@ -1,0 +1,58 @@
+[
+    {
+        "stage_id": 1,
+        "stage_name": "Aşama 1",
+        "generated_model_id": 1,
+        "stage_info": "Aşama 1 açıklaması",
+        "is_deleted": false
+    },
+    {
+        "stage_id": 2,
+        "stage_name": "Aşama 2",
+        "generated_model_id": 2,
+        "stage_info": "Aşama 2 açıklaması",
+        "is_deleted": false
+    },
+    {
+        "stage_id": 3,
+        "stage_name": "Aşama 3",
+        "generated_model_id": 3,
+        "stage_info": "Aşama 3 açıklaması",
+        "is_deleted": false
+    },
+    {
+        "stage_id": 4,
+        "stage_name": "Cam Kurutma",
+        "generated_model_id": 1,
+        "stage_info": "Cam kurutma işlemi için gerekli adımlar ve dikkat edilmesi gerekenler",
+        "is_deleted": false
+    },
+    {
+        "stage_id": 5,
+        "stage_name": "Cam Kesim Ünitesi Montaj",
+        "generated_model_id": 3,
+        "stage_info": "Cam Kesim Ünitesi montaj işlemi için gerekli adımlar ve dikkat edilmesi gerekenler",
+        "is_deleted": false
+    },
+    {
+        "stage_id": 6,
+        "stage_name": "Cam Kesim Ünitesi Test",
+        "generated_model_id": 3,
+        "stage_info": "Cam Kesim Ünitesi test işlemi için gerekli adımlar ve dikkat edilmesi gerekenler",
+        "is_deleted": false
+    },
+    {
+        "stage_id": 7,
+        "stage_name": "Cam Yıkama Ünitesi Montaj",
+        "generated_model_id": 4,
+        "stage_info": "Cam Yıkama Ünitesi montaj işlemi için gerekli adımlar ve dikkat edilmesi gerekenler",
+        "is_deleted": false
+    },
+    {
+        "stage_id": 8,
+        "stage_name": "Cam Yıkama Ünitesi Test",
+        "generated_model_id": 4,
+        "stage_info": "Cam Yıkama Ünitesi test işlemi için gerekli adımlar ve dikkat edilmesi gerekenler",
+        "is_deleted": false
+    }
+] 

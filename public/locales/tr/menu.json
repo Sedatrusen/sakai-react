@@ -8,5 +8,11 @@
     "language": "Dil",
     "adminPanel": "Yönetici Paneli",
     "managerDashboard": "Yönetici Gösterge Paneli",
-    "viewerContent": "İzleyici İçeriği"
+    "viewerContent": "İzleyici İçeriği",
+    "home": "Ana Sayfa",
+    "pages": "Sayfalar",
+    "login": "Giriş",
+    "error": "Hata",
+    "access_denied": "Erişim Reddedildi",
+    "users": "Kullanıcılar"
 } 

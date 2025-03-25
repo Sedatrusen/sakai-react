@@ -8,6 +8,10 @@ export interface Batch {
     currency_id: number;
     current_rate: number;
     is_deleted: boolean;
+    created_at: Date;
+    status: string;
+    location: string;
+    notes?: string;
 }
 
 export interface BatchCreateDTO extends Omit<Batch, 'batch_id' | 'is_deleted'> {}
@@ -23,7 +27,11 @@ const dummyBatches: Batch[] = [
         price: 1500.50,
         currency_id: 1,
         current_rate: 31.25,
-        is_deleted: false
+        is_deleted: false,
+        created_at: new Date('2024-01-01'),
+        status: 'Active',
+        location: 'Warehouse A',
+        notes: 'First batch of the year'
     },
     {
         batch_id: 2,
@@ -34,7 +42,11 @@ const dummyBatches: Batch[] = [
         price: 2500.75,
         currency_id: 2,
         current_rate: 1.05,
-        is_deleted: false
+        is_deleted: false,
+        created_at: new Date('2024-01-15'),
+        status: 'Active',
+        location: 'Warehouse B',
+        notes: 'Second batch of the year'
     },
     {
         batch_id: 3,
@@ -45,7 +57,11 @@ const dummyBatches: Batch[] = [
         price: 1800.25,
         currency_id: 1,
         current_rate: 31.45,
-        is_deleted: false
+        is_deleted: false,
+        created_at: new Date('2024-02-01'),
+        status: 'Active',
+        location: 'Warehouse C',
+        notes: 'Third batch of the year'
     }
 ];
 
@@ -124,19 +140,44 @@ class BatchService {
 
     importBatches(file: File): Promise<void> {
         return new Promise((resolve) => {
-            setTimeout(() => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target?.result as string;
+                const lines = text.split('\n');
+                const headers = lines[0].split(',');
+                
+                lines.slice(1).forEach(line => {
+                    if (line.trim()) {
+                        const values = line.split(',');
+                        const batch: BatchCreateDTO = {
+                            supplier_id: parseInt(values[1]),
+                            batch_number: values[2],
+                            batch_qr: Buffer.from(''),
+                            total_quantity: parseInt(values[3]),
+                            price: parseFloat(values[4]),
+                            currency_id: parseInt(values[5]),
+                            current_rate: parseFloat(values[6]),
+                            created_at: new Date(values[7]),
+                            status: values[8],
+                            location: values[9],
+                            notes: values[10] || undefined
+                        };
+                        this.createBatch(batch);
+                    }
+                });
                 resolve();
-            }, 500);
+            };
+            reader.readAsText(file);
         });
     }
 
     exportBatches(): Promise<Blob> {
         return new Promise((resolve) => {
             setTimeout(() => {
-                const csvContent = 'batch_id,supplier_id,batch_number,total_quantity,price,currency_id,current_rate\n' +
+                const csvContent = 'batch_id,supplier_id,batch_number,total_quantity,price,currency_id,current_rate,created_at,status,location,notes\n' +
                     dummyBatches
                         .filter(b => !b.is_deleted)
-                        .map(b => `${b.batch_id},${b.supplier_id},${b.batch_number},${b.total_quantity},${b.price},${b.currency_id},${b.current_rate}`)
+                        .map(b => `${b.batch_id},${b.supplier_id},${b.batch_number},${b.total_quantity},${b.price},${b.currency_id},${b.current_rate},${b.created_at},${b.status},${b.location},${b.notes || ''}`)
                         .join('\n');
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 resolve(blob);

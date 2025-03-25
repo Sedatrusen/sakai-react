@@ -1,0 +1,44 @@
+[
+    {
+        "generated_model_id": 1,
+        "generated_model_name": "Model 1",
+        "generated_model_info": "Model 1 açıklaması",
+        "generated_model_type_id": 1,
+        "is_deleted": false
+    },
+    {
+        "generated_model_id": 2,
+        "generated_model_name": "Model 2",
+        "generated_model_info": "Model 2 açıklaması",
+        "generated_model_type_id": 1,
+        "is_deleted": false
+    },
+    {
+        "generated_model_id": 3,
+        "generated_model_name": "Model 3",
+        "generated_model_info": "Model 3 açıklaması",
+        "generated_model_type_id": 1,
+        "is_deleted": false
+    },
+    {
+        "generated_model_id": 4,
+        "generated_model_name": "Model 4",
+        "generated_model_info": "Model 4 açıklaması",
+        "generated_model_type_id": 1,
+        "is_deleted": false
+    },
+    {
+        "generated_model_id": 5,
+        "generated_model_name": "Cam Kesim Ünitesi",
+        "generated_model_info": "Cam Kesim Alt Birimi",
+        "generated_model_type_id": 2,
+        "is_deleted": false
+    },
+    {
+        "generated_model_id": 6,
+        "generated_model_name": "Cam Yıkama Ünitesi",
+        "generated_model_info": "Cam Yıkama Alt Birimi",
+        "generated_model_type_id": 2,
+        "is_deleted": false
+    }
+] 

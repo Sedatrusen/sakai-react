@@ -1,0 +1,25 @@
+{
+    "stage_components": [
+        {
+            "stage_component_id": 1,
+            "stage_id": 1,
+            "component_id": 1,
+            "quantity": 2,
+            "is_deleted": false
+        },
+        {
+            "stage_component_id": 2,
+            "stage_id": 1,
+            "component_id": 2,
+            "quantity": 1,
+            "is_deleted": false
+        },
+        {
+            "stage_component_id": 3,
+            "stage_id": 2,
+            "component_id": 3,
+            "quantity": 4,
+            "is_deleted": false
+        }
+    ]
+} 

@@ -8,4 +8,8 @@ export interface Batch {
     currency_id: number;
     current_rate: number;
     is_deleted: boolean;
+    created_at: Date;
+    status: string;
+    location: string;
+    notes?: string;
 } 
